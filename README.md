@@ -12,4 +12,9 @@ npm run start
 
 ## Configuration
 
-- `NPM_CHANGES_URL`: override the default changes feed URL (defaults to `https://replicate.npmjs.com/_changes?feed=continuous&include_docs=true&since=now&heartbeat=60000`).
+- `NPM_REPLICATE_DB_URL`: defaults to `https://replicate.npmjs.com/` (used to discover the current `update_seq` so the monitor starts “from now”).
+- `NPM_CHANGES_URL`: defaults to `https://replicate.npmjs.com/_changes`.
+- `NPM_REGISTRY_URL`: defaults to `https://registry.npmjs.org/` (used to fetch packuments to inspect `scripts.postinstall`).
+- `CHANGES_LIMIT`: defaults to `200` (max changes per poll request).
+- `POLL_MS`: defaults to `1500` (sleep when there are no new changes).
+- `MAX_CONCURRENCY`: defaults to `10` (concurrent packument fetches).

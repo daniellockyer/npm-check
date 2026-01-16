@@ -1,10 +1,13 @@
 /**
  * npm postinstall monitor
  *
- * Streams npm's CouchDB changes feed and flags new publishes that introduce
- * a `scripts.postinstall` entry.
+ * Polls npm's replicate `_changes` endpoint and flags new publishes that
+ * introduce a `scripts.postinstall` entry.
  *
- * Data source: https://replicate.npmjs.com/_changes
+ * Notes:
+ * - `replicate.npmjs.com` currently rejects streaming feeds (`feed=continuous`)
+ *   and `include_docs`, so this script uses the normal `_changes` feed and
+ *   fetches package metadata from `registry.npmjs.org` to inspect scripts.
  */
 
 'use strict';
@@ -12,8 +15,11 @@
 const https = require('node:https');
 const { setTimeout: delay } = require('node:timers/promises');
 
-const DEFAULT_ENDPOINT =
-  'https://replicate.npmjs.com/_changes?feed=continuous&include_docs=true&since=now&heartbeat=60000';
+const DEFAULT_REPLICATE_DB_URL = 'https://replicate.npmjs.com/';
+const DEFAULT_CHANGES_URL = 'https://replicate.npmjs.com/_changes';
+const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org/';
+
+const agent = new https.Agent({ keepAlive: true, maxSockets: 50 });
 
 function nowIso() {
   return new Date().toISOString();
@@ -64,119 +70,190 @@ function pickLatestAndPreviousVersions(doc) {
   return { latest: latest && versions[latest] ? latest : null, previous: null };
 }
 
-function parseNdjsonLines(chunk, state, onLine) {
-  state.buffer += chunk.toString('utf8');
+function httpGetJson(url, { headers } = {}) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      url,
+      {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'npm-check-postinstall-monitor',
+          Accept: 'application/json',
+          ...(headers || {})
+        },
+        agent,
+        timeout: 60000
+      },
+      (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', (c) => {
+          body += c;
+          if (body.length > 20 * 1024 * 1024) {
+            req.destroy(new Error('response too large'));
+          }
+        });
+        res.on('end', () => {
+          if (res.statusCode !== 200) {
+            reject(new Error(`HTTP ${res.statusCode || 0}: ${body.slice(0, 200)}`));
+            return;
+          }
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(new Error(`invalid JSON: ${e && e.message ? e.message : String(e)}`));
+          }
+        });
+      }
+    );
 
-  // Protect against runaway buffering (e.g., if we miss newlines somehow).
-  const MAX_BUFFER = 50 * 1024 * 1024; // 50MB
-  if (state.buffer.length > MAX_BUFFER) {
-    state.buffer = '';
-    process.stderr.write(`[${nowIso()}] WARN buffer exceeded ${MAX_BUFFER} bytes; reset\n`);
-    return;
-  }
+    req.on('timeout', () => req.destroy(new Error('request timeout')));
+    req.on('error', (e) => reject(e));
+    req.end();
+  });
+}
 
-  let idx;
-  while ((idx = state.buffer.indexOf('\n')) >= 0) {
-    const line = state.buffer.slice(0, idx).trim();
-    state.buffer = state.buffer.slice(idx + 1);
-    if (!line) continue; // heartbeat
-    onLine(line);
+async function getInitialSince(replicateDbUrl) {
+  const dbInfo = await httpGetJson(replicateDbUrl);
+  if (!dbInfo || typeof dbInfo.update_seq === 'undefined') {
+    throw new Error('replicate db info missing update_seq');
   }
+  return dbInfo.update_seq;
+}
+
+function encodePackageNameForRegistry(name) {
+  // Scoped packages need the slash encoded: @scope%2Fpkg
+  return encodeURIComponent(name);
+}
+
+async function fetchPackument(registryBaseUrl, name) {
+  const url = new URL(encodePackageNameForRegistry(name), registryBaseUrl);
+  // "corgi" packument: smaller than full and includes scripts.
+  return httpGetJson(url, {
+    headers: { Accept: 'application/vnd.npm.install-v1+json' }
+  });
 }
 
 async function run() {
-  const endpoint = process.env.NPM_CHANGES_URL || DEFAULT_ENDPOINT;
-  const processed = new Set(); // `${name}@${version}`
-  let since = null; // last seq, used on reconnect
+  const replicateDbUrl = process.env.NPM_REPLICATE_DB_URL || DEFAULT_REPLICATE_DB_URL;
+  const changesUrl = process.env.NPM_CHANGES_URL || DEFAULT_CHANGES_URL;
+  const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
+
+  const maxConcurrency = Math.max(1, Number(process.env.MAX_CONCURRENCY || 10));
+  const limit = Math.max(1, Math.min(5000, Number(process.env.CHANGES_LIMIT || 200)));
+  const pollMs = Math.max(250, Number(process.env.POLL_MS || 1500));
+  const maxCachePackages = Math.max(1000, Number(process.env.MAX_CACHE_PACKAGES || 200000));
+
+  const flagged = new Set(); // `${name}@${version}` flagged already
+  const lastSeenLatest = new Map(); // name -> latest version processed
+
+  let since = null;
   let backoffMs = 1000;
 
-  process.stdout.write(`[${nowIso()}] starting stream: ${endpoint}\n`);
+  since = await getInitialSince(replicateDbUrl);
+  process.stdout.write(
+    `[${nowIso()}] starting poll: changes=${changesUrl} since=${since} limit=${limit} concurrency=${maxConcurrency}\n`
+  );
+
+  const queue = [];
+  let inFlight = 0;
+
+  const runNext = () => {
+    while (inFlight < maxConcurrency && queue.length > 0) {
+      const fn = queue.shift();
+      inFlight += 1;
+      Promise.resolve()
+        .then(fn)
+        .catch(() => {})
+        .finally(() => {
+          inFlight -= 1;
+          runNext();
+        });
+    }
+  };
+
+  const enqueue = (fn) => {
+    queue.push(fn);
+    runNext();
+  };
 
   // Run indefinitely.
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const url = new URL(endpoint);
-    if (since != null) url.searchParams.set('since', String(since));
-
-    const state = { buffer: '' };
-
     try {
-      await new Promise((resolve, reject) => {
-        const req = https.request(
-          url,
-          {
-            method: 'GET',
-            headers: {
-              'User-Agent': 'npm-check-postinstall-monitor',
-              Accept: 'application/json'
-            },
-            timeout: 120000
-          },
-          (res) => {
-            if (res.statusCode !== 200) {
-              reject(new Error(`HTTP ${res.statusCode || 0}`));
-              res.resume();
-              return;
-            }
+      const url = new URL(changesUrl);
+      url.searchParams.set('since', String(since));
+      url.searchParams.set('limit', String(limit));
 
-            backoffMs = 1000; // reset on successful connect
-            res.setEncoding('utf8');
+      const changes = await httpGetJson(url);
+      backoffMs = 1000;
 
-            res.on('data', (chunk) => {
-              parseNdjsonLines(chunk, state, (line) => {
-                let msg;
-                try {
-                  msg = JSON.parse(line);
-                } catch {
-                  process.stderr.write(`[${nowIso()}] WARN failed JSON parse\n`);
-                  return;
-                }
+      if (!changes || !Array.isArray(changes.results) || typeof changes.last_seq === 'undefined') {
+        throw new Error('unexpected _changes response shape');
+      }
 
-                if (msg && typeof msg.seq !== 'undefined') since = msg.seq;
-                if (!msg || !msg.doc || !msg.id) return;
+      for (const row of changes.results) {
+        if (!row || typeof row.id !== 'string') continue;
+        const name = row.id;
+        if (name.startsWith('_design/')) continue;
 
-                const name = msg.id;
-                const doc = msg.doc;
-                const { latest, previous } = pickLatestAndPreviousVersions(doc);
-                if (!latest) return;
-
-                const key = `${name}@${latest}`;
-                if (processed.has(key)) return;
-                processed.add(key);
-
-                const versions = doc.versions && typeof doc.versions === 'object' ? doc.versions : {};
-                const latestDoc = versions[latest];
-                const prevDoc = previous ? versions[previous] : null;
-
-                const latestHas = hasPostinstall(latestDoc);
-                if (!latestHas) return;
-
-                const prevHas = prevDoc ? hasPostinstall(prevDoc) : false;
-                if (!prevHas) {
-                  const cmd = latestDoc && latestDoc.scripts ? latestDoc.scripts.postinstall : '';
-                  const prevTxt = previous ? ` (prev: ${previous})` : ' (first publish / unknown prev)';
-                  process.stdout.write(
-                    `[${nowIso()}] FLAG postinstall added: ${name}@${latest}${prevTxt}\n` +
-                      `  postinstall: ${JSON.stringify(cmd)}\n`
-                  );
-                }
-              });
-            });
-
-            res.on('end', () => resolve());
-            res.on('error', (e) => reject(e));
+        enqueue(async () => {
+          let packument;
+          try {
+            packument = await fetchPackument(registryBaseUrl, name);
+          } catch (e) {
+            process.stderr.write(
+              `[${nowIso()}] WARN packument fetch failed for ${name}: ${e && e.message ? e.message : String(e)}\n`
+            );
+            return;
           }
-        );
 
-        req.on('timeout', () => {
-          req.destroy(new Error('request timeout'));
+          const { latest, previous } = pickLatestAndPreviousVersions(packument);
+          if (!latest) return;
+
+          const last = lastSeenLatest.get(name);
+          if (last === latest) return;
+          lastSeenLatest.set(name, latest);
+
+          if (lastSeenLatest.size > maxCachePackages) {
+            lastSeenLatest.clear();
+            process.stderr.write(
+              `[${nowIso()}] WARN package cache exceeded ${maxCachePackages}; cleared cache\n`
+            );
+          }
+
+          const versions =
+            packument.versions && typeof packument.versions === 'object' ? packument.versions : {};
+          const latestDoc = versions[latest];
+          const prevDoc = previous ? versions[previous] : null;
+
+          const latestHas = hasPostinstall(latestDoc);
+          if (!latestHas) return;
+
+          const prevHas = prevDoc ? hasPostinstall(prevDoc) : false;
+          if (prevHas) return;
+
+          const key = `${name}@${latest}`;
+          if (flagged.has(key)) return;
+          flagged.add(key);
+
+          const cmd = latestDoc && latestDoc.scripts ? latestDoc.scripts.postinstall : '';
+          const prevTxt = previous ? ` (prev: ${previous})` : ' (first publish / unknown prev)';
+          process.stdout.write(
+            `[${nowIso()}] FLAG postinstall added: ${name}@${latest}${prevTxt}\n` +
+              `  postinstall: ${JSON.stringify(cmd)}\n`
+          );
         });
-        req.on('error', (e) => reject(e));
-        req.end();
-      });
+      }
+
+      since = changes.last_seq;
+
+      if (changes.results.length === 0) {
+        await delay(pollMs);
+      }
     } catch (err) {
       process.stderr.write(
-        `[${nowIso()}] stream error: ${err && err.message ? err.message : String(err)}; reconnecting in ${backoffMs}ms\n`
+        `[${nowIso()}] poll error: ${err && err.message ? err.message : String(err)}; retrying in ${backoffMs}ms\n`
       );
       await delay(backoffMs);
       backoffMs = Math.min(backoffMs * 2, 30000);
