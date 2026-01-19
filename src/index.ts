@@ -10,6 +10,7 @@
  *   fetches package metadata from `registry.npmjs.org` to inspect scripts.
  */
 
+import "dotenv/config";
 import { setTimeout as delay } from "node:timers/promises";
 import pLimit from "p-limit";
 import semver from "semver";
@@ -32,6 +33,9 @@ interface Packument {
   "dist-tags"?: {
     latest?: string;
     [key: string]: string | undefined;
+  };
+  repository?: {
+    url: string;
   };
   [key: string]: unknown;
 }
@@ -218,6 +222,100 @@ async function sendTelegramNotification(
   }
 }
 
+async function sendDiscordNotification(
+  webhookUrl: string,
+  message: string,
+): Promise<void> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: message,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Discord notification timeout");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function createGitHubIssue(
+  githubToken: string,
+  repoUrl: string,
+  packageName: string,
+  packageVersion: string,
+  scriptType: "preinstall" | "postinstall",
+  scriptContent: string,
+): Promise<void> {
+  const url = new URL(repoUrl);
+  const pathParts = url.pathname.split("/").filter(Boolean);
+  if (pathParts.length < 2) {
+    throw new Error(`Invalid GitHub repository URL: ${repoUrl}`);
+  }
+  const owner = pathParts[0];
+  const repo = pathParts[1];
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
+
+  const issueTitle = `[Security Alert] New \`${scriptType}\` script added in \`${packageName}@${packageVersion}\``;
+  const issueBody = `
+A new \`${scriptType}\` script was detected in version \`${packageVersion}\` of the package \`${packageName}\`.
+
+**Script content:**
+\`\`\`
+${scriptContent}
+\`\`\`
+
+This could be a security risk. Please investigate.
+`;
+  console.log(issueBody)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${githubToken}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+      body: JSON.stringify({
+        title: issueTitle,
+        body: issueBody,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("GitHub issue creation timeout");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function run(): Promise<void> {
   const replicateDbUrl =
     process.env.NPM_REPLICATE_DB_URL || DEFAULT_REPLICATE_DB_URL;
@@ -234,6 +332,8 @@ async function run(): Promise<void> {
 
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  const githubToken = process.env.GITHUB_TOKEN;
 
   const flagged = new Set<string>(); // `${name}@${version}` flagged already
   const lastSeenLatest = new Map<string, string>(); // name -> latest version processed
@@ -359,6 +459,44 @@ async function run(): Promise<void> {
                   );
                 }
               }
+
+              // Send Discord notification if configured
+              if (discordWebhookUrl) {
+                try {
+                  const message =
+                    `🚨 **Postinstall script added**\n\n` +
+                    `**Package:** \`${name}@${latest}\`\n` +
+                    `**Previous version:** ${previous || "none"}\n` +
+                    `**Postinstall:** \`\`\`${cmd}\`\`\``;
+                  await sendDiscordNotification(discordWebhookUrl, message);
+                } catch (e) {
+                  const errorMessage =
+                    e instanceof Error && e.message ? e.message : String(e);
+                  process.stderr.write(
+                    `[${nowIso()}] WARN Discord notification failed: ${errorMessage}\n`,
+                  );
+                }
+              }
+
+              // Create GitHub issue if configured
+              if (githubToken && packument.repository?.url) {
+                try {
+                  await createGitHubIssue(
+                    githubToken,
+                    packument.repository.url,
+                    name,
+                    latest,
+                    "postinstall",
+                    cmd
+                  );
+                } catch (e) {
+                  const errorMessage =
+                    e instanceof Error && e.message ? e.message : String(e);
+                  process.stderr.write(
+                    `[${nowIso()}] WARN GitHub issue creation failed: ${errorMessage}\n`,
+                  );
+                }
+              }
             }
           }
 
@@ -398,6 +536,44 @@ async function run(): Promise<void> {
                     e instanceof Error && e.message ? e.message : String(e);
                   process.stderr.write(
                     `[${nowIso()}] WARN Telegram notification failed: ${errorMessage}\n`,
+                  );
+                }
+              }
+              
+              // Send Discord notification if configured
+              if (discordWebhookUrl) {
+                try {
+                  const message =
+                    `🚨 **Preinstall script added**\n\n` +
+                    `**Package:** \`${name}@${latest}\`\n` +
+                    `**Previous version:** ${previous || "none"}\n` +
+                    `**Preinstall:** \`\`\`${cmd}\`\`\``;
+                  await sendDiscordNotification(discordWebhookUrl, message);
+                } catch (e) {
+                  const errorMessage =
+                    e instanceof Error && e.message ? e.message : String(e);
+                  process.stderr.write(
+                    `[${nowIso()}] WARN Discord notification failed: ${errorMessage}\n`,
+                  );
+                }
+              }
+
+              // Create GitHub issue if configured
+              if (githubToken && packument.repository?.url) {
+                try {
+                  await createGitHubIssue(
+                    githubToken,
+                    packument.repository.url,
+                    name,
+                    latest,
+                    "preinstall",
+                    cmd
+                  );
+                } catch (e) {
+                  const errorMessage =
+                    e instanceof Error && e.message ? e.message : String(e);
+                  process.stderr.write(
+                    `[${nowIso()}] WARN GitHub issue creation failed: ${errorMessage}\n`,
                   );
                 }
               }

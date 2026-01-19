@@ -22,7 +22,9 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
-        TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID || ''
+        TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID || '',
+        DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL || '',
+        GITHUB_TOKEN: process.env.GITHUB_TOKEN || ''
       }
     }
   ]
