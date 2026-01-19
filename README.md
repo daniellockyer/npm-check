@@ -36,6 +36,11 @@ It is recommended to run this application with a process manager like PM2.
 3.  Copy `.env.example` to `.env` and fill in the values.
 4.  Start the application with `pm2 startOrReload ecosystem.config.cjs --env production`.
 5.  Save the PM2 process list with `pm2 save`.
+## Hall of Fame
+
+This project has led to the following results as of January 19th, 2026:
+- **6 packages** have been reported
+- **1 package** has been removed
 
 ## Author
 
@@ -44,3 +49,4 @@ It is recommended to run this application with a process manager like PM2.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+[GitHub Sponsors](https://github.com/sponsors/daniellockyer)
