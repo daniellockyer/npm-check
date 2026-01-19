@@ -10,6 +10,7 @@
  *   fetches package metadata from `registry.npmjs.org` to inspect scripts.
  */
 
+import "dotenv/config";
 import { setTimeout as delay } from "node:timers/promises";
 import pLimit from "p-limit";
 import semver from "semver";

@@ -12,7 +12,7 @@ The tool uses npm's replicate database (`replicate.npmjs.com`) to track changes,
 
 ## Configuration
 
-The application is configured using environment variables.
+The application is configured using environment variables. You can set them in your shell, or by creating a `.env` file in the root of the project.
 
 | Variable              | Description                                                                                                | Default                             |
 | --------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------- |
@@ -33,7 +33,7 @@ It is recommended to run this application with a process manager like PM2.
 
 1.  Clone the repository.
 2.  Install dependencies with `npm install`.
-3.  Set the environment variables in `ecosystem.config.cjs` or directly in your shell.
+3.  Copy `.env.example` to `.env` and fill in the values.
 4.  Start the application with `pm2 startOrReload ecosystem.config.cjs --env production`.
 5.  Save the PM2 process list with `pm2 save`.
 
