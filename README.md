@@ -7,8 +7,8 @@ The tool uses npm's replicate database (`replicate.npmjs.com`) to track changes,
 ## Hall of Fame
 
 This project has led to the following results as of January 20th, 2026:
-- **7 packages** have been reported
-- **6 packages** has been removed
+- **11 packages** have been reported
+- **7 packages** has been removed
 
 Including at least 1 instance of live malware:
 
