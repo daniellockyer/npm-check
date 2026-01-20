@@ -302,11 +302,11 @@ ${scriptContent}
 This could be a security risk. Please investigate.
 `;
 if(!octokit) {return;}
-await octokit.request('POST /repos/{owner}/{repo}/issues', {
-  owner: 'OWNER',
-  repo: 'REPO',
-  title: 'Found a bug',
-  body: 'I\'m having a problem with this.',
+await octokit.request(`POST /repos/${owner}/{repo}/issues`, {
+  owner: `${owner}`,
+  repo: `${repo}`,
+  title: `${issueTitle}`,
+  body: `${issueBody}`,
   assignees: [
     'octocat'
   ],

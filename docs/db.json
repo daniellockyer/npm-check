@@ -1,5 +1,13 @@
 [
   {
+    "packageName": "@namehash/namehash-ui",
+    "version": "1.5.1",
+    "scriptType": "postinstall",
+    "scriptContent": "pnpm build:css",
+    "previousVersion": "1.5.0",
+    "timestamp": "2026-01-20T09:41:28.651Z"
+  },
+  {
     "packageName": "csv-parsing-xz",
     "version": "1.2.1",
     "scriptType": "postinstall",
