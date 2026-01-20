@@ -130,6 +130,7 @@ async function run(): Promise<void> {
 
           await packageQueue.add("scan-package", jobData, {
             jobId: name, // Use package name as job ID
+            delay: 60000, // Delay 60 seconds before processing
           });
 
           process.stdout.write(

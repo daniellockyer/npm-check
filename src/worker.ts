@@ -6,7 +6,6 @@
  */
 
 import "dotenv/config";
-import { setTimeout as delay } from "node:timers/promises";
 import { Worker } from "bullmq";
 import packageJson from "package-json";
 import semver from "semver";
@@ -235,11 +234,8 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
 
   process.stdout.write(
-    `[${nowIso()}] Processing: ${packageName} (waiting 60s for npm to get the package)\n`,
+    `[${nowIso()}] Processing: ${packageName}\n`,
   );
-
-  // Wait 60 seconds before processing to let npm get the package
-  await delay(60000);
 
   let packument: Packument;
   try {
