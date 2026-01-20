@@ -1,5 +1,29 @@
 [
   {
+    "packageName": "acp-extension-codex-win32-x64",
+    "version": "0.8.6",
+    "scriptType": "postinstall",
+    "scriptContent": "node ./ensure-executable.mjs",
+    "previousVersion": "0.8.5",
+    "timestamp": "2026-01-20T10:51:41.298Z"
+  },
+  {
+    "packageName": "acp-extension-codex-linux-x64",
+    "version": "0.8.6",
+    "scriptType": "postinstall",
+    "scriptContent": "node ./ensure-executable.mjs",
+    "previousVersion": "0.8.5",
+    "timestamp": "2026-01-20T10:51:10.436Z"
+  },
+  {
+    "packageName": "acp-extension-codex-win32-arm64",
+    "version": "0.8.6",
+    "scriptType": "postinstall",
+    "scriptContent": "node ./ensure-executable.mjs",
+    "previousVersion": "0.8.5",
+    "timestamp": "2026-01-20T10:51:10.268Z"
+  },
+  {
     "packageName": "potdf",
     "version": "8.0.0",
     "scriptType": "postinstall",

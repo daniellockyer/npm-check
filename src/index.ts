@@ -310,7 +310,7 @@ await octokit.request(`POST /repos/${owner}/${repo}/issues`, {
   assignees: [
     'octocat'
   ],
-  milestone: 1,
+
   labels: [
     'bug'
   ],
