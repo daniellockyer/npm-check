@@ -33,9 +33,9 @@ It is recommended to run this application with a process manager like PM2.
 
 ## Hall of Fame
 
-This project has led to the following results as of January 19th, 2026:
+This project has led to the following results as of January 20th, 2026:
 - **6 packages** have been reported
-- **1 package** has been removed
+- **6 packages** has been removed
 
 ## Author
 
