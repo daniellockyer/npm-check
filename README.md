@@ -4,38 +4,15 @@ Monitors newly published npm package versions and flags publishes that **introdu
 
 The tool uses npm's replicate database (`replicate.npmjs.com`) to track changes, then fetches full package metadata from the registry to compare scripts between versions.
 
-## Configuration
-
-The application is configured using environment variables. You can set them in your shell, or by creating a `.env` file in the root of the project.
-
-| Variable              | Description                                                                                                | Default                             |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `NPM_REPLICATE_DB_URL`  | The URL of the npm replicate database.                                                                     | `https://replicate.npmjs.com/`      |
-| `NPM_CHANGES_URL`       | The URL of the npm `_changes` feed.                                                                        | `https://replicate.npmjs.com/_changes` |
-| `NPM_REGISTRY_URL`      | The URL of the npm registry.                                                                               | `https://registry.npmjs.org/`       |
-| `MAX_CONCURRENCY`       | The maximum number of packages to process concurrently.                                                    | `10`                                |
-| `CHANGES_LIMIT`         | The maximum number of changes to fetch per request.                                                        | `200`                               |
-| `POLL_MS`               | The polling interval in milliseconds.                                                                      | `1500`                              |
-| `TELEGRAM_BOT_TOKEN`    | Your Telegram bot token.                                                                                   | ` `                                 |
-| `TELEGRAM_CHAT_ID`      | The ID of the Telegram chat to send notifications to.                                                      | ` `                                 |
-| `DISCORD_WEBHOOK_URL`   | The URL of the Discord webhook to send notifications to.                                                   | ` `                                 |
-| `GITHUB_TOKEN`          | Your GitHub personal access token with `public_repo` scope. Used for creating issues.                      | ` `                                 |
-
-## Usage
-
-It is recommended to run this application with a process manager like PM2.
-
-1.  Clone the repository.
-2.  Install dependencies with `npm install`.
-3.  Copy `.env.example` to `.env` and fill in the values.
-4.  Start the application with `pm2 startOrReload ecosystem.config.cjs --env production`.
-5.  Save the PM2 process list with `pm2 save`.
-
 ## Hall of Fame
 
 This project has led to the following results as of January 20th, 2026:
-- **6 packages** have been reported
+- **7 packages** have been reported
 - **6 packages** has been removed
+
+Including at least 1 instance of live malware:
+
+<img width="363" height="150" alt="image" src="https://github.com/user-attachments/assets/f3d6822e-5aac-4600-a7ec-7a2c63112ea8" />
 
 ## Author
 
