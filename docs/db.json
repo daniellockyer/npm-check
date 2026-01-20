@@ -1,5 +1,21 @@
 [
   {
+    "packageName": "ground-mcp",
+    "version": "0.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node install.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-20T10:11:19.836Z"
+  },
+  {
+    "packageName": "@createsomething/ground-mcp",
+    "version": "0.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node install.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-20T10:10:19.367Z"
+  },
+  {
     "packageName": "@namehash/namehash-ui",
     "version": "1.5.1",
     "scriptType": "postinstall",

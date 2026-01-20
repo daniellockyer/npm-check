@@ -287,7 +287,7 @@ async function createGitHubIssue(
     throw new Error(`Invalid GitHub repository URL: ${repoUrl}`);
   }
   const owner = pathParts[0];
-  const repo = pathParts[1];
+  const repo = pathParts[1].replace(/\.git$/, "");
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
 
   const issueTitle = `[Security Alert] New \`${scriptType}\` script added in \`${packageName}@${packageVersion}\``;
@@ -302,7 +302,7 @@ ${scriptContent}
 This could be a security risk. Please investigate.
 `;
 if(!octokit) {return;}
-await octokit.request(`POST /repos/${owner}/{repo}/issues`, {
+await octokit.request(`POST /repos/${owner}/${repo}/issues`, {
   owner: `${owner}`,
   repo: `${repo}`,
   title: `${issueTitle}`,
