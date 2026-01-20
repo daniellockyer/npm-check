@@ -27,10 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Copy database to deployment folder
-        run: |
-          mkdir -p docs
-          cp db.json docs/db.json
+    
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
