@@ -269,6 +269,7 @@ async function createGitHubIssue(
   scriptType: "preinstall" | "postinstall",
   scriptContent: string,
 ): Promise<void> {
+  try{
   const url = new URL(repoUrl);
   const pathParts = url.pathname.split("/").filter(Boolean);
   if (pathParts.length < 2) {
@@ -290,11 +291,13 @@ ${scriptContent}
 This could be a security risk. Please investigate.
 `;
 
-  await httpPostJson(
+await httpPostJson(
     apiUrl,
     {
       title: issueTitle,
       body: issueBody,
+      owner,
+      repo
     },
     {
       headers: {
@@ -302,8 +305,42 @@ This could be a security risk. Please investigate.
         Accept: "application/vnd.github.v3+json",
       },
       timeoutMessage: "GitHub issue creation timeout",
-    },
-  );
+    });
+
+    
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("GitHub issue creation timeout");
+    }
+    throw error;
+  } finally {
+
+  }
+}
+
+async function saveFinding(finding: Finding): Promise<void> {
+  let findings: Finding[] = [];
+  try {
+    const data = await fs.readFile(DB_PATH, "utf8");
+    findings = JSON.parse(data);
+  } catch (error: any) {
+    if (error.code !== "ENOENT") {
+      process.stderr.write(
+        `[${nowIso()}] WARN could not read ${DB_PATH}: ${error.message}\n`,
+      );
+    }
+  }
+
+  // Add new finding to the top
+  findings.unshift(finding);
+
+  try {
+    await fs.writeFile(DB_PATH, JSON.stringify(findings, null, 2), "utf8");
+  } catch (error: any) {
+    process.stderr.write(
+      `[${nowIso()}] WARN could not write to ${DB_PATH}: ${error.message}\n`,
+    );
+  }
 }
 
 async function run(): Promise<void> {
@@ -418,7 +455,15 @@ async function run(): Promise<void> {
               `[${nowIso()}] FLAG ${scriptType} added: ${name}@${latest}${prevTxt}\n` +
               `  ${scriptType}: ${JSON.stringify(cmd)}\n`,
             );
-
+             const finding: Finding = {
+                packageName: name,
+                version: latest,
+                scriptType: "postinstall",
+                scriptContent: cmd,
+                previousVersion: previous,
+                timestamp: nowIso(),
+              };
+              await saveFinding(finding);
             // Send Telegram notification if configured
             if (telegramBotToken && telegramChatId) {
               try {
