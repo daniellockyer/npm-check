@@ -1,5 +1,13 @@
 [
   {
+    "packageName": "postcss-hotfix",
+    "version": "0.0.2",
+    "scriptType": "postinstall",
+    "scriptContent": "echo Test",
+    "previousVersion": null,
+    "timestamp": "2026-01-20T09:02:24.288Z"
+  },
+  {
     "packageName": "@tellahq/ppx-spice",
     "version": "0.2.10",
     "scriptType": "postinstall",

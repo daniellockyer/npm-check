@@ -26,7 +26,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { promises as fs } from "node:fs";
 import pLimit from "p-limit";
 import semver from "semver";
-
+import { Octokit } from "@octokit/rest";
 const DB_PATH = "./docs/db.json";
 
 interface Finding {
@@ -278,7 +278,7 @@ async function createGitHubIssue(
   packageName: string,
   packageVersion: string,
   scriptType: "preinstall" | "postinstall",
-  scriptContent: string,
+  scriptContent: string,octokit: Octokit| null = null
 ): Promise<void> {
  
   const url = new URL(repoUrl);
@@ -301,23 +301,23 @@ ${scriptContent}
 
 This could be a security risk. Please investigate.
 `;
-
-await httpPostJson(
-    apiUrl,
-    {
-      title: issueTitle,
-      body: issueBody,
-      owner,
-      repo
-    },
-    {
-      headers: {
-        Authorization: `token ${githubToken}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-      timeoutMessage: "GitHub issue creation timeout",
-    });
-
+if(!octokit) {return;}
+await octokit.request('POST /repos/{owner}/{repo}/issues', {
+  owner: 'OWNER',
+  repo: 'REPO',
+  title: 'Found a bug',
+  body: 'I\'m having a problem with this.',
+  assignees: [
+    'octocat'
+  ],
+  milestone: 1,
+  labels: [
+    'bug'
+  ],
+  headers: {
+    'X-GitHub-Api-Version': '2022-11-28'
+  }
+})
     
   
 }
@@ -365,7 +365,12 @@ async function run(): Promise<void> {
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
   const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
   const githubToken = process.env.GITHUB_TOKEN;
-
+  let octokit: Octokit | null = null;
+  if(githubToken) {
+     octokit = new Octokit({
+  auth: githubToken
+})
+  }
   const flagged = new Set<string>(); // `${name}@${version}` flagged already
   const lastSeenLatest = new Map<string, string>(); // name -> latest version processed
 
@@ -532,7 +537,7 @@ async function run(): Promise<void> {
                     name,
                     latest,
                     "postinstall",
-                    cmd
+                    cmd,octokit
                   );
                 } catch (e) {
                   const errorMessage =
