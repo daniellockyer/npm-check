@@ -9,6 +9,11 @@ import "dotenv/config";
 import { Worker } from "bullmq";
 import semver from "semver";
 import { type PackageJobData } from "./queue.ts";
+import {
+  fetchPackument,
+  encodePackageNameForRegistry,
+  type Packument,
+} from "./lib/fetch-packument.ts";
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.org/";
 
@@ -17,18 +22,6 @@ interface VersionDoc {
     preinstall?: string;
     postinstall?: string;
     [key: string]: string | undefined;
-  };
-  [key: string]: unknown;
-}
-
-interface Packument {
-  versions?: Record<string, VersionDoc>;
-  "dist-tags"?: {
-    latest?: string;
-    [key: string]: string | undefined;
-  };
-  repository?: {
-    url: string;
   };
   [key: string]: unknown;
 }
@@ -68,7 +61,9 @@ function pickLatestAndPreviousVersions(doc: Packument): {
   previous: string | null;
 } {
   const versions =
-    doc.versions && typeof doc.versions === "object" ? doc.versions : null;
+    doc.versions && typeof doc.versions === "object"
+      ? (doc.versions as Record<string, VersionDoc>)
+      : null;
 
   if (!versions) return { latest: null, previous: null };
 
@@ -83,45 +78,6 @@ function pickLatestAndPreviousVersions(doc: Packument): {
   const previous = sortedVersions[1] || null;
 
   return { latest, previous };
-}
-
-function encodePackageNameForRegistry(name: string): string {
-  return encodeURIComponent(name);
-}
-
-async function fetchPackument(
-  registryBaseUrl: string,
-  name: string,
-): Promise<Packument> {
-  const encodedName = encodePackageNameForRegistry(name);
-  const url = `${registryBaseUrl.replace(/\/$/, "")}/${encodedName}`;
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
-    }
-
-    const packument = await response.json();
-    return packument as Packument;
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("packument fetch timeout");
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
 }
 
 async function httpPostJson(
@@ -266,7 +222,7 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
     return;
   }
 
-  const versions = packument.versions ?? {};
+  const versions = (packument.versions ?? {}) as Record<string, VersionDoc>;
   const latestDoc = versions[latest];
   const prevDoc = previous ? versions[previous] : undefined;
 

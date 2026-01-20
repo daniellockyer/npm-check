@@ -33,7 +33,9 @@ function nowIso(): string {
 }
 
 function getErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message ? error.message : String(error);
+  return error instanceof Error && error.message
+    ? error.message
+    : String(error);
 }
 
 async function httpGetJson<T = unknown>(
@@ -133,9 +135,7 @@ async function run(): Promise<void> {
             delay: 60000, // Delay 60 seconds before processing
           });
 
-          process.stdout.write(
-            `[${nowIso()}] Queued: ${name}\n`,
-          );
+          process.stdout.write(`[${nowIso()}] Queued: ${name}\n`);
         } catch (e) {
           process.stderr.write(
             `[${nowIso()}] WARN failed to queue ${name}: ${getErrorMessage(e)}\n`,
