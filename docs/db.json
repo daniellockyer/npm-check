@@ -1,5 +1,13 @@
 [
   {
+    "packageName": "klazy",
+    "version": "1.0.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node lib/postinstall.js || true",
+    "previousVersion": null,
+    "timestamp": "2026-01-20T20:07:25.834Z"
+  },
+  {
     "packageName": "@adyen/adyen-salesforce-pwa",
     "version": "4.2.0",
     "scriptType": "postinstall",
