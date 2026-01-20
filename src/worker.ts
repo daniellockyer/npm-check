@@ -7,7 +7,6 @@
 
 import "dotenv/config";
 import { Worker } from "bullmq";
-import packageJson from "package-json";
 import semver from "semver";
 import { type PackageJobData } from "./queue.ts";
 
@@ -39,7 +38,9 @@ function nowIso(): string {
 }
 
 function getErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message ? error.message : String(error);
+  return error instanceof Error && error.message
+    ? error.message
+    : String(error);
 }
 
 function isLikelyVersionKey(key: unknown): key is string {
@@ -55,49 +56,33 @@ function hasScript(versionDoc: unknown, scriptName: string): boolean {
   return typeof val === "string" && val.trim().length > 0;
 }
 
-function getScript(versionDoc: VersionDoc | undefined, scriptName: string): string {
+function getScript(
+  versionDoc: VersionDoc | undefined,
+  scriptName: string,
+): string {
   return versionDoc?.scripts?.[scriptName] ?? "";
 }
 
-function pickLatestAndPreviousVersions(
-  doc: Packument,
-): { latest: string | null; previous: string | null } {
+function pickLatestAndPreviousVersions(doc: Packument): {
+  latest: string | null;
+  previous: string | null;
+} {
   const versions =
     doc.versions && typeof doc.versions === "object" ? doc.versions : null;
-  const distTags =
-    doc["dist-tags"] && typeof doc["dist-tags"] === "object"
-      ? doc["dist-tags"]
-      : null;
 
   if (!versions) return { latest: null, previous: null };
 
-  // Get latest from dist-tags, or find highest semver version
-  let latest: string | null = distTags?.latest || null;
-  
-  if (!latest) {
-    const versionKeys = Object.keys(versions);
-    const sortedVersions = versionKeys
-      .filter((v) => isLikelyVersionKey(v))
-      .sort((a, b) => semver.compare(b, a) ?? 0);
-    latest = sortedVersions[0] || null;
-  }
-
-  if (!latest || !versions[latest]) {
-    return { latest: null, previous: null };
-  }
-
-  // Find the highest previous version using semver comparison
-  const previousVersions = Object.keys(versions)
-    .filter(
-      (v) =>
-        isLikelyVersionKey(v) &&
-        v !== latest &&
-        semver.compare(v, latest!) !== null &&
-        semver.compare(v, latest!)! < 0,
-    )
+  // Always find the highest semver version from all available versions
+  // Don't trust dist-tags as they may not reflect the actual highest version
+  const versionKeys = Object.keys(versions);
+  const sortedVersions = versionKeys
+    .filter((v) => isLikelyVersionKey(v))
     .sort((a, b) => semver.compare(b, a) ?? 0);
 
-  return { latest, previous: previousVersions[0] ?? null };
+  const latest = sortedVersions[0] || null;
+  const previous = sortedVersions[1] || null;
+
+  return { latest, previous };
 }
 
 function encodePackageNameForRegistry(name: string): string {
@@ -108,11 +93,35 @@ async function fetchPackument(
   registryBaseUrl: string,
   name: string,
 ): Promise<Packument> {
-  const packument = await packageJson(name, {
-    registryUrl: registryBaseUrl,
-    fullMetadata: true,
-  });
-  return packument as Packument;
+  const encodedName = encodePackageNameForRegistry(name);
+  const url = `${registryBaseUrl.replace(/\/$/, "")}/${encodedName}`;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+    }
+
+    const packument = await response.json();
+    return packument as Packument;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("packument fetch timeout");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 async function httpPostJson(
@@ -233,9 +242,7 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const { packageName } = job.data;
   const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
 
-  process.stdout.write(
-    `[${nowIso()}] Processing: ${packageName}\n`,
-  );
+  process.stdout.write(`[${nowIso()}] Processing: ${packageName}\n`);
 
   let packument: Packument;
   try {
@@ -281,7 +288,7 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
 
     process.stdout.write(
       `[${nowIso()}] 🚨 MALICIOUS PACKAGE DETECTED: ${scriptType} added: ${packageName}@${latest}${prevTxt}\n` +
-      `  ${scriptType}: ${JSON.stringify(cmd)}\n`,
+        `  ${scriptType}: ${JSON.stringify(cmd)}\n`,
     );
 
     // Send notifications
@@ -382,9 +389,7 @@ worker.on("failed", (job, err) => {
 });
 
 worker.on("error", (err) => {
-  process.stderr.write(
-    `[${nowIso()}] Worker error: ${getErrorMessage(err)}\n`,
-  );
+  process.stderr.write(`[${nowIso()}] Worker error: ${getErrorMessage(err)}\n`);
 });
 
 process.stdout.write(
