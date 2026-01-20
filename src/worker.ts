@@ -9,7 +9,7 @@ import "dotenv/config";
 import { Worker } from "bullmq";
 import packageJson from "package-json";
 import semver from "semver";
-import { PackageJobData } from "./queue.ts";
+import { type PackageJobData } from "./queue.ts";
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.org/";
 
