@@ -1,4 +1,7 @@
-import { type Packument, encodePackageNameForRegistry } from "./fetch-packument.ts";
+import {
+  type Packument,
+  encodePackageNameForRegistry,
+} from "./fetch-packument.ts";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -132,14 +135,14 @@ ${scriptContent}
   }
 
   if (diffOutput) {
-    const diffLines = diffOutput.split('\n').slice(0, 20);
-    const truncatedDiff = diffLines.join('\n');
-    const isTruncated = diffOutput.split('\n').length > 20;
+    const diffLines = diffOutput.split("\n").slice(0, 20);
+    const truncatedDiff = diffLines.join("\n");
+    const isTruncated = diffOutput.split("\n").length > 20;
     issueBody += `
 
 **Package Diff (${previousVersion} → ${packageVersion}):**
 \`\`\`diff
-${truncatedDiff}${isTruncated ? '\n\n... (truncated)' : ''}
+${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}
 \`\`\`
 `;
   }
@@ -191,27 +194,33 @@ export async function sendCombinedScriptAlertNotifications(
   if (telegramBotToken && telegramChatId) {
     try {
       const alertParts = alerts.map((alert) => {
-        const scriptLabel = alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
-        const escapedCmd = alert.latestCmd.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const scriptLabel =
+          alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
+        const escapedCmd = alert.latestCmd
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
         if (alert.action === "added") {
           return `• <b>${scriptLabel} added:</b> <code>${escapedCmd}</code>`;
         } else {
-          const escapedPrev = (alert.prevCmd ?? "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          const escapedPrev = (alert.prevCmd ?? "")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
           return `• <b>${scriptLabel} changed:</b>\n  Previous: <code>${escapedPrev}</code>\n  New: <code>${escapedCmd}</code>`;
         }
       });
 
       let message =
         `🚨 <b>${alerts.length} script change${alerts.length > 1 ? "s" : ""} detected</b>\n\n` +
-        `<code>${packageName}</code> <a href="${npmPackageUrl}">npm</a> ${previous ?? "none"} → ${latest}\n\n` +
+        `<code>${packageName}</code> (<a href="${npmPackageUrl}">npm</a>) ${previous ?? "none"} → ${latest}\n\n` +
         alertParts.join("\n\n");
 
       if (diffOutput) {
-        const diffLines = diffOutput.split('\n').slice(0, 20);
-        const truncatedDiff = diffLines.join('\n');
-        const isTruncated = diffOutput.split('\n').length > 20;
-        message += `\n\n<b>Package Diff (${previous} → ${latest}):</b>\n` +
-          `<pre><code>${truncatedDiff}${isTruncated ? '\n\n... (truncated)' : ''}</code></pre>`;
+        const diffLines = diffOutput.split("\n").slice(0, 20);
+        const truncatedDiff = diffLines.join("\n");
+        const isTruncated = diffOutput.split("\n").length > 20;
+        message +=
+          `\n\n<b>Package Diff (${previous} → ${latest}):</b>\n` +
+          `<pre><code>${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}</code></pre>`;
       }
 
       await sendTelegramNotification(telegramBotToken, telegramChatId, message);
@@ -226,7 +235,8 @@ export async function sendCombinedScriptAlertNotifications(
   if (discordWebhookUrl) {
     try {
       const alertParts = alerts.map((alert) => {
-        const scriptLabel = alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
+        const scriptLabel =
+          alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
         if (alert.action === "added") {
           return `• **${scriptLabel} added:** \`\`\`${alert.latestCmd}\`\`\``;
         } else {
@@ -240,11 +250,12 @@ export async function sendCombinedScriptAlertNotifications(
         alertParts.join("\n\n");
 
       if (diffOutput) {
-        const diffLines = diffOutput.split('\n').slice(0, 20);
-        const truncatedDiff = diffLines.join('\n');
-        const isTruncated = diffOutput.split('\n').length > 20;
-        message += `\n\n**Package Diff (${previous} → ${latest}):**\n` +
-          `\`\`\`diff\n${truncatedDiff}${isTruncated ? '\n\n... (truncated)' : ''}\n\`\`\``;
+        const diffLines = diffOutput.split("\n").slice(0, 20);
+        const truncatedDiff = diffLines.join("\n");
+        const isTruncated = diffOutput.split("\n").length > 20;
+        message +=
+          `\n\n**Package Diff (${previous} → ${latest}):**\n` +
+          `\`\`\`diff\n${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}\n\`\`\``;
       }
 
       await sendDiscordNotification(discordWebhookUrl, message);
