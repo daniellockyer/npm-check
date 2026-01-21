@@ -65,7 +65,7 @@ async function runNpmDiff(
   fromVersion: string,
   toVersion: string,
 ): Promise<string | null> {
-  const command = `npm diff ${packageName}@${fromVersion} ${packageName}@${toVersion} --diff-ignore-all-space`;
+  const command = `npm diff --diff=${packageName}@${fromVersion} --diff=${packageName}@${toVersion} --diff-ignore-all-space`;
   try {
     const { stdout } = await execAsync(command, { timeout: 30000 }); // 30 second timeout
     return stdout.trim();
