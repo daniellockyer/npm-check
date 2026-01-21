@@ -145,7 +145,7 @@ ${scriptContent}
     const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previousVersion)}&to=${encodeURIComponent(packageVersion)}`;
     issueBody += `
 
-**Package Diff:** [View diff](${diffUrl})`;
+[View diff](${diffUrl})`;
   }
 
   issueBody += `
@@ -214,7 +214,7 @@ export async function sendCombinedScriptAlertNotifications(
       if (previous && latest) {
         const encodedPackageName = encodePackageNameForRegistry(packageName);
         const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previous)}&to=${encodeURIComponent(latest)}`;
-        message += `\n\n<b>Package Diff:</b> <a href="${diffUrl}">View diff</a>`;
+        message += `\n\n<a href="${diffUrl}">View diff</a>`;
       }
 
       await sendTelegramNotification(telegramBotToken, telegramChatId, message);
@@ -247,7 +247,7 @@ export async function sendCombinedScriptAlertNotifications(
       if (previous && latest) {
         const encodedPackageName = encodePackageNameForRegistry(packageName);
         const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previous)}&to=${encodeURIComponent(latest)}`;
-        message += `\n\n**Package Diff:** [View diff](${diffUrl})`;
+        message += `\n\n[View diff](${diffUrl})`;
       }
 
       await sendDiscordNotification(discordWebhookUrl, message);
