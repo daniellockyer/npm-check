@@ -15,7 +15,7 @@ const connection = {
 export const packageQueue = new Queue<PackageJobData>("package-scan", {
   connection,
   defaultJobOptions: {
-    attempts: 5,
+    attempts: 10,
     backoff: {
       type: "exponential",
       delay: 5000,
