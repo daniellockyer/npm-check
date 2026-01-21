@@ -17,9 +17,8 @@
     "node": ">=24"
   },
   "dependencies": {
-    "bullmq": "^5.66.5",
     "dotenv": "^17.2.3",
-    "ioredis": "^5.9.2",
+    "p-limit": "^5.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {

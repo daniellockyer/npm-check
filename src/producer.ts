@@ -7,7 +7,7 @@
 
 import "dotenv/config";
 import { setTimeout as delay } from "node:timers/promises";
-import { packageQueue, type PackageJobData } from "./queue.ts";
+import { packageQueue, type PackageJobData } from "./lib/in-memory-queue.ts";
 
 const DEFAULT_REPLICATE_DB_URL = "https://replicate.npmjs.com/";
 const DEFAULT_CHANGES_URL = "https://replicate.npmjs.com/_changes";
@@ -130,10 +130,7 @@ async function run(): Promise<void> {
             packageName: name,
           };
 
-          await packageQueue.add("scan-package", jobData, {
-            jobId: name, // Use package name as job ID
-            delay: 60000, // Delay 60 seconds before processing
-          });
+          packageQueue.add(jobData);
 
           process.stdout.write(`[${nowIso()}] Queued: ${name}\n`);
         } catch (e) {

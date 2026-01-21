@@ -6,9 +6,8 @@
  */
 
 import "dotenv/config";
-import { Worker } from "bullmq";
 import semver from "semver";
-import { type PackageJobData } from "./queue.ts";
+import { packageQueue, type PackageJobData } from "./lib/in-memory-queue.ts";
 import { fetchPackument, type Packument } from "./lib/fetch-packument.ts";
 import { sendCombinedScriptAlertNotifications, type Alert } from "./lib/notifications.ts";
 import { saveFinding, type Finding } from "./lib/db.ts";
@@ -78,8 +77,8 @@ function pickLatestAndPreviousVersions(doc: Packument): {
   return { latest, previous };
 }
 
-async function processPackage(job: { data: PackageJobData }): Promise<void> {
-  const { packageName } = job.data;
+async function processPackage(job: PackageJobData): Promise<void> {
+  const { packageName } = job;
   const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
 
   process.stdout.write(`[${nowIso()}] Processing: ${packageName}\n`);
@@ -160,56 +159,9 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
   }
 }
 
-const connection = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT || 6379),
-  maxRetriesPerRequest: null,
-};
 
-const worker = new Worker<PackageJobData>(
-  "package-scan",
-  async (job) => {
-    await processPackage(job);
-  },
-  {
-    connection,
-    concurrency: Number(process.env.WORKER_CONCURRENCY || 5),
-    limiter: {
-      max: Number(process.env.WORKER_MAX_JOBS_PER_SECOND || 10),
-      duration: 1000,
-    },
-  },
-);
-
-worker.on("completed", (job) => {
-  process.stdout.write(
-    `[${nowIso()}] JOB COMPLETED: ${job.data.packageName}\n`,
-  );
-});
-
-worker.on("failed", (job, err) => {
-  process.stderr.write(
-    `[${nowIso()}] JOB FAILED: ${job?.data.packageName}: ${getErrorMessage(err)}\n`,
-  );
-});
-
-worker.on("error", (err) => {
-  process.stderr.write(`[${nowIso()}] WORKER ERROR: ${getErrorMessage(err)}\n`);
-});
+packageQueue.process(processPackage);
 
 process.stdout.write(
-  `[${nowIso()}] Worker started: concurrency=${process.env.WORKER_CONCURRENCY || 5}\n`,
+  `[${nowIso()}] Worker started\n`,
 );
-
-// Graceful shutdown
-process.on("SIGTERM", async () => {
-  process.stdout.write(`[${nowIso()}] SIGTERM received, closing worker...\n`);
-  await worker.close();
-  process.exit(0);
-});
-
-process.on("SIGINT", async () => {
-  process.stdout.write(`[${nowIso()}] SIGINT received, closing worker...\n`);
-  await worker.close();
-  process.exit(0);
-});
