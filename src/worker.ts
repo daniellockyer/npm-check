@@ -8,8 +8,6 @@
 import "dotenv/config";
 import { Worker } from "bullmq";
 import semver from "semver";
-import { exec } from "child_process";
-import { promisify } from "util";
 import { type PackageJobData } from "./queue.ts";
 import { fetchPackument, type Packument } from "./lib/fetch-packument.ts";
 import {
@@ -19,7 +17,6 @@ import {
 import { isScriptAllowed } from "./lib/script-allowlist.ts";
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.org/";
-const execAsync = promisify(exec);
 
 interface VersionDoc {
   scripts?: {
@@ -58,23 +55,6 @@ function getScript(
   scriptName: string,
 ): string {
   return versionDoc?.scripts?.[scriptName] ?? "";
-}
-
-async function runNpmDiff(
-  packageName: string,
-  fromVersion: string,
-  toVersion: string,
-): Promise<string | null> {
-  const command = `npm diff --diff=${packageName}@${fromVersion} --diff=${packageName}@${toVersion} --diff-ignore-all-space`;
-  try {
-    const { stdout } = await execAsync(command, { timeout: 30000 }); // 30 second timeout
-    return stdout.trim();
-  } catch (error) {
-    process.stderr.write(
-      `[${nowIso()}] WARN npm diff failed for ${packageName}@${fromVersion} -> ${packageName}@${toVersion}: ${getErrorMessage(error)}\n`,
-    );
-    return null;
-  }
 }
 
 function pickLatestAndPreviousVersions(doc: Packument): {
@@ -159,32 +139,6 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
     }
   }
 
-  // Run npm diff if latest version has pre/post-install scripts
-  const latestHasPreinstall = hasScript(latestDoc, "preinstall");
-  const latestHasPostinstall = hasScript(latestDoc, "postinstall");
-
-  let diffOutput: string | null = null;
-  if (
-    (latestHasPreinstall || latestHasPostinstall) &&
-    previous &&
-    alerts.length
-  ) {
-    process.stdout.write(
-      `[${nowIso()}] ${packageName}: Running npm diff ${previous} -> ${latest}\n`,
-    );
-
-    diffOutput = await runNpmDiff(packageName, previous, latest);
-    if (diffOutput) {
-      process.stdout.write(
-        `[${nowIso()}] ${packageName}: npm diff completed (${diffOutput.split("\n").length} lines)\n`,
-      );
-    } else {
-      process.stdout.write(
-        `[${nowIso()}] ${packageName}: npm diff failed or produced no output\n`,
-      );
-    }
-  }
-
   if (alerts.length > 0) {
     const prevTxt = previous
       ? ` (prev: ${previous})`
@@ -205,7 +159,6 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
       previous,
       alerts,
       packument,
-      diffOutput,
     );
   }
 }

@@ -98,7 +98,6 @@ export async function createGitHubIssue(
   scriptContent: string,
   previousVersion: string | null = null,
   previousScriptContent: string | null = null,
-  diffOutput: string | null = null,
 ): Promise<void> {
   const url = new URL(repoUrl);
   const pathParts = url.pathname.split("/").filter(Boolean);
@@ -141,17 +140,12 @@ ${scriptContent}
 `;
   }
 
-  if (diffOutput) {
-    const diffLines = diffOutput.split("\n").slice(0, 20);
-    const truncatedDiff = diffLines.join("\n");
-    const isTruncated = diffOutput.split("\n").length > 20;
+  if (previousVersion && packageVersion) {
+    const encodedPackageName = encodePackageNameForRegistry(packageName);
+    const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previousVersion)}&to=${encodeURIComponent(packageVersion)}`;
     issueBody += `
 
-**Package Diff (${previousVersion} → ${packageVersion}):**
-\`\`\`diff
-${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}
-\`\`\`
-`;
+**Package Diff:** [View diff](${diffUrl})`;
   }
 
   issueBody += `
@@ -187,7 +181,6 @@ export async function sendCombinedScriptAlertNotifications(
   previous: string | null,
   alerts: Alert[],
   packument: Packument,
-  diffOutput: string | null = null,
 ): Promise<void> {
   if (alerts.length === 0) return;
 
@@ -217,13 +210,10 @@ export async function sendCombinedScriptAlertNotifications(
         `<code>${escapeHtml(packageName)}</code> (<a href="${npmPackageUrl}">npm</a>) ${escapeHtml(previous ?? "none")} → ${escapeHtml(latest)}\n\n` +
         alertParts.join("\n\n");
 
-      if (diffOutput) {
-        const diffLines = diffOutput.split("\n").slice(0, 20);
-        const truncatedDiff = diffLines.join("\n");
-        const isTruncated = diffOutput.split("\n").length > 20;
-        message +=
-          `\n\n<b>Package Diff (${escapeHtml(previous ?? "none")} → ${escapeHtml(latest)}):</b>\n` +
-          `<pre><code>${escapeHtml(truncatedDiff)}${isTruncated ? "\n\n... (truncated)" : ""}</code></pre>`;
+      if (previous && latest) {
+        const encodedPackageName = encodePackageNameForRegistry(packageName);
+        const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previous)}&to=${encodeURIComponent(latest)}`;
+        message += `\n\n<b>Package Diff:</b> <a href="${diffUrl}">View diff</a>`;
       }
 
       await sendTelegramNotification(telegramBotToken, telegramChatId, message);
@@ -252,13 +242,10 @@ export async function sendCombinedScriptAlertNotifications(
         `\`${packageName}\` [npm](${npmPackageUrl}) ${previous ?? "none"} → ${latest}\n\n` +
         alertParts.join("\n\n");
 
-      if (diffOutput) {
-        const diffLines = diffOutput.split("\n").slice(0, 20);
-        const truncatedDiff = diffLines.join("\n");
-        const isTruncated = diffOutput.split("\n").length > 20;
-        message +=
-          `\n\n**Package Diff (${previous} → ${latest}):**\n` +
-          `\`\`\`diff\n${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}\n\`\`\``;
+      if (previous && latest) {
+        const encodedPackageName = encodePackageNameForRegistry(packageName);
+        const diffUrl = `https://app.renovatebot.com/package-diff?name=${encodedPackageName}&from=${encodeURIComponent(previous)}&to=${encodeURIComponent(latest)}`;
+        message += `\n\n**Package Diff:** [View diff](${diffUrl})`;
       }
 
       await sendDiscordNotification(discordWebhookUrl, message);
@@ -282,7 +269,6 @@ export async function sendCombinedScriptAlertNotifications(
           alert.latestCmd,
           previous,
           alert.action === "changed" ? alert.prevCmd : null,
-          diffOutput,
         );
       } catch (e) {
         process.stderr.write(
