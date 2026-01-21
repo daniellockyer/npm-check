@@ -13,6 +13,13 @@ function getErrorMessage(error: unknown): string {
     : String(error);
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 async function httpPostJson(
   url: string | URL,
   body: unknown,
@@ -196,22 +203,18 @@ export async function sendCombinedScriptAlertNotifications(
       const alertParts = alerts.map((alert) => {
         const scriptLabel =
           alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
-        const escapedCmd = alert.latestCmd
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
+        const escapedCmd = escapeHtml(alert.latestCmd);
         if (alert.action === "added") {
           return `• <b>${scriptLabel} added:</b> <code>${escapedCmd}</code>`;
         } else {
-          const escapedPrev = (alert.prevCmd ?? "")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+          const escapedPrev = escapeHtml(alert.prevCmd ?? "");
           return `• <b>${scriptLabel} changed:</b>\n  Previous: <code>${escapedPrev}</code>\n  New: <code>${escapedCmd}</code>`;
         }
       });
 
       let message =
         `🚨 <b>${alerts.length} script change${alerts.length > 1 ? "s" : ""} detected</b>\n\n` +
-        `<code>${packageName}</code> (<a href="${npmPackageUrl}">npm</a>) ${previous ?? "none"} → ${latest}\n\n` +
+        `<code>${escapeHtml(packageName)}</code> (<a href="${npmPackageUrl}">npm</a>) ${escapeHtml(previous ?? "none")} → ${escapeHtml(latest)}\n\n` +
         alertParts.join("\n\n");
 
       if (diffOutput) {
@@ -219,8 +222,8 @@ export async function sendCombinedScriptAlertNotifications(
         const truncatedDiff = diffLines.join("\n");
         const isTruncated = diffOutput.split("\n").length > 20;
         message +=
-          `\n\n<b>Package Diff (${previous} → ${latest}):</b>\n` +
-          `<pre><code>${truncatedDiff}${isTruncated ? "\n\n... (truncated)" : ""}</code></pre>`;
+          `\n\n<b>Package Diff (${escapeHtml(previous ?? "none")} → ${escapeHtml(latest)}):</b>\n` +
+          `<pre><code>${escapeHtml(truncatedDiff)}${isTruncated ? "\n\n... (truncated)" : ""}</code></pre>`;
       }
 
       await sendTelegramNotification(telegramBotToken, telegramChatId, message);
