@@ -1,5 +1,13 @@
 [
   {
+    "packageName": "sra-testing-test",
+    "version": "3.0.7",
+    "scriptType": "postinstall",
+    "scriptContent": "node ./index.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-21T16:29:46.019Z"
+  },
+  {
     "packageName": "agentboard",
     "version": "0.4.0",
     "scriptType": "postinstall",
