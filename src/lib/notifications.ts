@@ -1,3 +1,4 @@
+import { Octokit } from "@octokit/rest";
 import { type Packument, encodePackageNameForRegistry } from "./fetch-packument.ts";
 
 function nowIso(): string {
@@ -80,7 +81,7 @@ export async function sendDiscordNotification(
 }
 
 export async function createGitHubIssue(
-  githubToken: string,
+  octokit: Octokit,
   repoUrl: string,
   packageName: string,
   packageVersion: string,
@@ -95,8 +96,7 @@ export async function createGitHubIssue(
     throw new Error(`Invalid GitHub repository URL: ${repoUrl}`);
   }
   const owner = pathParts[0];
-  const repo = pathParts[1];
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
+  const repo = pathParts[1].replace(/\.git$/, "");
 
   const isChanged = previousScriptContent !== null;
   const issueTitle = isChanged
@@ -134,20 +134,12 @@ This could be a security risk. Please investigate.
 `;
   }
 
-  await httpPostJson(
-    apiUrl,
-    {
-      title: issueTitle,
-      body: issueBody,
-    },
-    {
-      headers: {
-        Authorization: `token ${githubToken}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-      timeoutMessage: "GitHub issue creation timeout",
-    },
-  );
+  await octokit.issues.create({
+    owner,
+    repo,
+    title: issueTitle,
+    body: issueBody,
+  });
 }
 
 export type Alert = {
@@ -229,10 +221,11 @@ export async function sendCombinedScriptAlertNotifications(
 
   // Create GitHub issues for each alert
   if (githubToken && packument.repository?.url) {
+    const octokit = new Octokit({ auth: githubToken });
     for (const alert of alerts) {
       try {
         await createGitHubIssue(
-          githubToken,
+          octokit,
           packument.repository.url,
           packageName,
           latest,
