@@ -21,8 +21,7 @@ export const packageQueue = new Queue<PackageJobData>("package-scan", {
       delay: 5000,
     },
     removeOnComplete: {
-      age: 3600, // Keep completed jobs for 1 hour
-      count: 1000, // Keep max 1000 completed jobs
+      age: 86400, // Keep completed jobs for 24 hours
     },
     removeOnFail: {
       age: 86400, // Keep failed jobs for 24 hours
