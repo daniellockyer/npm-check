@@ -99,9 +99,13 @@ export async function startProducer(piscina: Piscina): Promise<void> {
   for await (const num of list) {
     console.log(num);
     // Expected output: 1
-    await piscina.run(await getTask()).catch(err => {
+    const tache=await getTask();
+    if (tache){
+    await piscina.run(tache).catch(err => {
             console.error(`[${nowIso()}] Piscina task failed for ${num.packageName  }: ${getErrorMessage(err)}`);
-          });
+          });} else {
+            process.stdout.write(`[${nowIso()}] No task retrieved for: ${num.packageName}\n`);
+          }
           continue
     // Closes iterator, triggers return
   }
@@ -182,17 +186,18 @@ export async function startProducer(piscina: Piscina): Promise<void> {
     }
   };
    if (process.env.GITHUB_ACTIONS !== 'true') {
-   (async () => {
+  (async () => {
     const list = await getPendingTasks();
   for await (const num of list) {
     console.log(num);
     // Expected output: 1
-    await piscina.run(await getTask()).catch(err => {
+    const tache=await getTask();
+    if (tache){
+    await piscina.run(tache).catch(err => {
             console.error(`[${nowIso()}] Piscina task failed for ${num.packageName  }: ${getErrorMessage(err)}`);
-          }).then(() => {
-            process.stdout.write(`[${nowIso()}] Finished processing: ${num.packageName}\n`);
-            return
-          });
+          });} else {
+            process.stdout.write(`[${nowIso()}] No task retrieved for: ${num.packageName}\n`);
+          }
           continue
     // Closes iterator, triggers return
   }

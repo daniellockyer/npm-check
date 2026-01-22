@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { type Packument, encodePackageNameForRegistry } from "./fetch-packument.ts";
-
+import { getFindings} from "./db.ts"
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -221,12 +221,13 @@ export async function sendCombinedScriptAlertNotifications(
       );
     }
   }
-   
-  // Create GitHub issues for each alert
-  if (githubToken && packument.repository?.url) {
-    const octokit = new Octokit({ auth: githubToken });
-    for (const alert of alerts) {
-      try {
+  const old = await getFindings();
+  if (old.find(item => item.packageName === packageName && alerts.some(alert => alert.scriptType === item.scriptType))) {
+    // Create GitHub issues for each alert
+    if (githubToken && packument.repository?.url) {
+      const octokit = new Octokit({ auth: githubToken });
+      for (const alert of alerts) {
+        try {
         await createGitHubIssue(
           octokit,
           packument.repository.url,
@@ -243,7 +244,7 @@ export async function sendCombinedScriptAlertNotifications(
           `[${nowIso()}] WARN GitHub issue creation failed: ${getErrorMessage(e)}\n`,
         );
       }
-    }
+    }}
   }
   return successfulGithubAlerts; // Return collected successful alerts
 }

