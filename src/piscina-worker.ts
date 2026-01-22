@@ -3,7 +3,7 @@ import semver from "semver";
 import { fetchPackument, type Packument } from "./lib/fetch-packument.ts";
 import { sendCombinedScriptAlertNotifications, type Alert } from "./lib/notifications.ts";
 import { saveFinding, type Finding } from "./lib/db.ts";
-import { savePendingTask, removePendingTask } from "./lib/pending-db.ts";
+import { savePendingTask, removePendingTask,getPendingTasks } from "./lib/pending-db.ts";
 
 // This will be passed from the main thread
 export interface PackageJobData {
@@ -84,28 +84,30 @@ export default async function processPackage(job: PackageJobData): Promise<void>
       timestamp: nowIso(),
     });
     process.stdout.write(`[${nowIso()}] Added to pending queue: ${packageName}\n`);
-
+    const actua=await getPendingTasks()
+    const actual=actua[0];
+    await removePendingTask(actual.packageName, "latest");
     try {
-        process.stdout.write(`[${nowIso()}] Processing: ${packageName}\n`);
+        process.stdout.write(`[${nowIso()}] Processing: ${actual.packageName}\n`);
 
         let packument: Packument;
         try {
-          packument = await fetchPackument(registryBaseUrl, packageName);
+          packument = await fetchPackument(registryBaseUrl, actual.packageName);
         } catch (e) {
           throw new Error(
-            `packument fetch failed for ${packageName}: ${getErrorMessage(e)}`,
+            `packument fetch failed for ${actual.packageName}: ${getErrorMessage(e)}`,
           );
         }
 
         const { latest, previous } = pickLatestAndPreviousVersions(packument);
 
         process.stdout.write(
-          `[${nowIso()}] ${packageName}: latest=${latest ?? "null"}, previous=${previous ?? "null"}\n`,
+          `[${nowIso()}] ${actual.packageName}: latest=${latest ?? "null"}, previous=${previous ?? "null"}\n`,
         );
 
         if (!latest) {
           process.stdout.write(
-            `[${nowIso()}] Skipping ${packageName}: no versions found\n`,
+            `[${nowIso()}] Skipping ${actual.packageName}: no versions found\n`,
           );
           return;
         }
@@ -133,7 +135,7 @@ export default async function processPackage(job: PackageJobData): Promise<void>
           const prevTxt = previous ? ` (prev: ${previous})` : " (first publish / unknown prev)";
           for (const alert of alerts) {
             process.stdout.write(
-              `[${nowIso()}] 🚨 MALICIOUS PACKAGE DETECTED: ${alert.scriptType} ${alert.action}: ${packageName}@${latest}${prevTxt}\n` +
+              `[${nowIso()}] 🚨 MALICIOUS PACKAGE DETECTED: ${alert.scriptType} ${alert.action}: ${actual.packageName}@${latest}${prevTxt}\n` +
                 (alert.action === "added"
                   ? `  ${alert.scriptType}: ${JSON.stringify(alert.latestCmd)}\n`
                   : `  Previous ${alert.scriptType}: ${JSON.stringify(alert.prevCmd)}\n` +
@@ -144,7 +146,7 @@ export default async function processPackage(job: PackageJobData): Promise<void>
           // Save findings to db.json
           for (const alert of alerts) {
             const finding: Finding = {
-              packageName: packageName,
+              packageName: actual.packageName,
               version: latest,
               scriptType: alert.scriptType,
               scriptContent: alert.latestCmd,
@@ -155,7 +157,7 @@ export default async function processPackage(job: PackageJobData): Promise<void>
           }
 
           await sendCombinedScriptAlertNotifications(
-            packageName,
+            actual.packageName,
             latest,
             previous,
             alerts,
@@ -163,8 +165,8 @@ export default async function processPackage(job: PackageJobData): Promise<void>
           );
         }
     } finally {
-        process.stdout.write(`[${nowIso()}] Removing from pending queue: ${packageName}\n`);
+        process.stdout.write(`[${nowIso()}] Removing from pending queue: ${actual.packageName}\n`);
         // Remove from pending tasks once processing is complete
-        await removePendingTask(packageName, "latest");
+        
     }
 }

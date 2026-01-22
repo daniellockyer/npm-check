@@ -8,7 +8,7 @@
 import "dotenv/config";
 import Piscina from "piscina";
 import { setTimeout as delay } from "node:timers/promises";
-
+  let is_shutting_down = false;
 export interface PackageJobData {
   packageName: string;
 }
@@ -84,8 +84,15 @@ async function getInitialSince(
   }
   return dbInfo.update_seq;
 }
-
+const shutdown = () => {
+    if (!is_shutting_down) {
+      is_shutting_down = true;
+      process.stdout.write(`[${nowIso()}] Producer shutting down...\n`);
+    }
+  }
+export { shutdown };
 export async function startProducer(piscina: Piscina): Promise<void> {
+
   const replicateDbUrl =
     process.env.NPM_REPLICATE_DB_URL || DEFAULT_REPLICATE_DB_URL;
   const changesUrl = process.env.NPM_CHANGES_URL || DEFAULT_CHANGES_URL;
@@ -103,10 +110,11 @@ export async function startProducer(piscina: Piscina): Promise<void> {
   process.stdout.write(
     `[${nowIso()}] Producer starting: changes=${changesUrl} since=${since} limit=${changesLimit}\n`,
   );
+  
 
   // Run indefinitely.
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (!is_shutting_down) {
     try {
       const url = new URL(changesUrl);
       url.searchParams.set("since", String(since));
@@ -156,6 +164,7 @@ export async function startProducer(piscina: Piscina): Promise<void> {
       backoffMs = Math.min(backoffMs * 2, 30000);
     }
   }
+    
 }
 
 

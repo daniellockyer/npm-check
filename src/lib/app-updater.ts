@@ -14,12 +14,14 @@ export class Db<T> implements db<T> {
 
   async read(): Promise<T[]> {
     try {
+
       const data = await fs.readFile(this.filePath, "utf8");
       this.content = JSON.parse(data) as T[];
+      console.log(`Read ${this.content.length} records from ${this.filePath}`);
       return this.content;
     } catch (error: any) {
       if (error.code !== "ENOENT") {
-        console.error(`Error reading db file: ${error}`);
+        console.error(`Error reading db file: ${error} : ${this.filePath}`);
       }
       return this.content || [];
     }
