@@ -102,6 +102,7 @@ export async function startProducer(piscina: Piscina): Promise<void> {
      piscina.run(num).catch(err => {
             console.error(`[${nowIso()}] Piscina task failed for ${num.packageName  }: ${getErrorMessage(err)}`);
           });
+          continue
     // Closes iterator, triggers return
   }
 })();
@@ -191,6 +192,7 @@ export async function startProducer(piscina: Piscina): Promise<void> {
             process.stdout.write(`[${nowIso()}] Finished processing: ${num.packageName}\n`);
             return
           });
+          continue
     // Closes iterator, triggers return
   }
 })();
