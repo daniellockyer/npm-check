@@ -7,7 +7,7 @@ import { startProducer,shutdown } from "./producer.ts";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-if (process.env.GITHUB_ACTIONS !== 'true') {
+if (process.env.GITHUB_ACTIONS === 'true') {
   console.log("Exécution dans une GitHub Action : activation du timeout de 5 minutes.");
 
   setTimeout(() => {
