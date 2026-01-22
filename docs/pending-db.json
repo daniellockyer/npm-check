@@ -1,33 +1,113 @@
 [
   {
-    "packageName": "@pagecraft/sdk",
+    "packageName": "@leanspec/http-server",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:51.909Z"
+    "timestamp": "2026-01-22T14:23:07.149Z"
   },
   {
-    "packageName": "@typescript-eslint/type-utils",
+    "packageName": "@spotted/domain",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:51.894Z"
+    "timestamp": "2026-01-22T14:23:07.134Z"
   },
   {
-    "packageName": "@typescript-eslint/rule-tester",
+    "packageName": "@leanspec/ui-components",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:51.879Z"
+    "timestamp": "2026-01-22T14:23:07.116Z"
   },
   {
-    "packageName": "@mhamz.01/easyflow-texteditor",
+    "packageName": "@comercti/icons-hmg",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:51.862Z"
+    "timestamp": "2026-01-22T14:23:07.114Z"
   },
   {
-    "packageName": "beeai-framework",
+    "packageName": "@comercti/web-components-hmg",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:51.858Z"
+    "timestamp": "2026-01-22T14:22:55.457Z"
   },
   {
-    "packageName": "@typescript-eslint/utils",
+    "packageName": "@leanspec/mcp",
     "version": "latest",
-    "timestamp": "2026-01-22T14:10:40.761Z"
+    "timestamp": "2026-01-22T14:22:55.441Z"
+  },
+  {
+    "packageName": "omnics-notion-editor",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.426Z"
+  },
+  {
+    "packageName": "@comercti/react-components-hmg",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.410Z"
+  },
+  {
+    "packageName": "@atlassian-test-prod/synth-check",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.397Z"
+  },
+  {
+    "packageName": "@comercti/vue-components-hmg",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.383Z"
+  },
+  {
+    "packageName": "lean-spec",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.366Z"
+  },
+  {
+    "packageName": "ytdlp-nodejs",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:55.364Z"
+  },
+  {
+    "packageName": "@hashgraphonline/hashinal-wc",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:34.851Z"
+  },
+  {
+    "packageName": "@bugzy-ai/bugzy",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:34.832Z"
+  },
+  {
+    "packageName": "trustcaptcha-svelte",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:34.830Z"
+  },
+  {
+    "packageName": "@banumeow/n8n-nodes-oci-generativeai-agent",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:25.294Z"
+  },
+  {
+    "packageName": "ytdlp-nodejs",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:25.291Z"
+  },
+  {
+    "packageName": "alicia-design-system",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:01.790Z"
+  },
+  {
+    "packageName": "markstream-vue",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:01.773Z"
+  },
+  {
+    "packageName": "jpf",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:01.745Z"
+  },
+  {
+    "packageName": "@vtodorov/emarsys-sdk-wrapper-plugin",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:22:01.742Z"
+  },
+  {
+    "packageName": "@resulticks/trustsignal-wa-hsm",
+    "version": "latest",
+    "timestamp": "2026-01-22T14:21:50.375Z"
   },
   {
     "packageName": "@typescript-eslint/parser",

@@ -93,7 +93,18 @@ const shutdown = () => {
   }
 export { shutdown };
 export async function startProducer(piscina: Piscina): Promise<void> {
-
+   
+   (async () => {
+    const list = await getPendingTasks();
+  for await (const num of list) {
+    console.log(num);
+    // Expected output: 1
+     piscina.run(num).catch(err => {
+            console.error(`[${nowIso()}] Piscina task failed for ${num.packageName  }: ${getErrorMessage(err)}`);
+          });
+    break; // Closes iterator, triggers return
+  }
+})();
   const replicateDbUrl =
     process.env.NPM_REPLICATE_DB_URL || DEFAULT_REPLICATE_DB_URL;
   const changesUrl = process.env.NPM_CHANGES_URL || DEFAULT_CHANGES_URL;
@@ -167,13 +178,20 @@ export async function startProducer(piscina: Piscina): Promise<void> {
       await delay(backoffMs);
       backoffMs = Math.min(backoffMs * 2, 30000);
     }
-  }
-  let list=await getPendingTasks()
-  for (let i=0;i<list.length;i++){
-     piscina.run(list[i]).catch(err => {
-            console.error(`[${nowIso()}] Piscina task failed for ${list[i].packageName  }: ${getErrorMessage(err)}`);
+  };
+   
+   (async () => {
+    const list = await getPendingTasks();
+  for await (const num of list) {
+    console.log(num);
+    // Expected output: 1
+     piscina.run(num).catch(err => {
+            console.error(`[${nowIso()}] Piscina task failed for ${num.packageName  }: ${getErrorMessage(err)}`);
           });
+    break; // Closes iterator, triggers return
   }
+})();
+ 
   process.stdout.write(`[${nowIso()}] Producer has shut down.\n`);
   return
     
