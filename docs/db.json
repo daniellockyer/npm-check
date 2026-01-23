@@ -1,5 +1,14 @@
 [
   {
+    "packageName": "@heartlandone/vega-sandbox-pr-2584-5179306313949fde8d290b66abcccac9c5de6de7",
+    "version": "2.71.0",
+    "scriptType": "postbuild",
+    "scriptContent": "cp dist/vega/*.css style/ && npm run postbuild:SRI && npm run postbuild:angular && npm run postbuild:vue && npm run postbuild:react && npm run postbuild:dist-check",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T06:21:11.513Z",
+    "issuesend": false
+  },
+  {
     "packageName": "@jacobtread/secret-sync",
     "version": "0.1.0",
     "scriptType": "postinstall",
