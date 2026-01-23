@@ -169,6 +169,7 @@ export async function sendCombinedScriptAlertNotifications(
 
   // Build combined Telegram message
   if (telegramBotToken && telegramChatId) {
+    console.log(telegramBotToken, telegramChatId);
     try {
       const alertParts = alerts.map((alert) => {
         const scriptLabel = alert.scriptType.charAt(0).toUpperCase() + alert.scriptType.slice(1);
