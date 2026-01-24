@@ -1,5 +1,23 @@
 [
   {
+    "packageName": "rollup-plugin-websqz",
+    "version": "1.0.4",
+    "scriptType": "postinstall",
+    "scriptContent": "node scripts/install.js",
+    "previousVersion": "1.0.3",
+    "timestamp": "2026-01-24T12:23:40.937Z",
+    "issuesend": true
+  },
+  {
+    "packageName": "nixopus",
+    "version": "0.1.0",
+    "scriptType": "postinstall",
+    "scriptContent": "node install.js",
+    "previousVersion": null,
+    "timestamp": "2026-01-24T12:23:05.502Z",
+    "issuesend": true
+  },
+  {
     "packageName": "@bob-kit/client",
     "version": "0.0.35",
     "scriptType": "postinstall",
