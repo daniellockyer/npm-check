@@ -1,5 +1,23 @@
 [
   {
+    "packageName": "@govcraft/paseto_cli",
+    "version": "1.0.24-alpha.3",
+    "scriptType": "postinstall",
+    "scriptContent": "BINARY_DISTRIBUTION_VERSION=1.0.24-alpha.3 node ./install.js",
+    "previousVersion": "1.0.23-alpha.3",
+    "timestamp": "2026-01-24T01:00:04.449Z",
+    "issuesend": false
+  },
+  {
+    "packageName": "dns-troubleshoot-toolkit-xyz123",
+    "version": "1.0.2",
+    "scriptType": "postinstall",
+    "scriptContent": "node -e \"const { DNSToolkit } = require('./src/index'); new DNSToolkit().getDnsSetup().then(console.log)\"",
+    "previousVersion": "1.0.1",
+    "timestamp": "2026-01-24T00:59:39.490Z",
+    "issuesend": false
+  },
+  {
     "packageName": "lance-context",
     "version": "1.0.1",
     "scriptType": "postinstall",
