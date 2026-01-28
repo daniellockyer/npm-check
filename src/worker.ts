@@ -15,6 +15,13 @@ import {
   type Alert,
 } from "./lib/notifications.ts";
 import { isScriptAllowed } from "./lib/script-allowlist.ts";
+import {
+  DEFAULT_OUTPUT_DIR,
+  nowIso,
+  getErrorMessage,
+  ensureOutputDir,
+  writeMetadataToFile,
+} from "./lib/utils.ts";
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.org/";
 
@@ -25,16 +32,6 @@ interface VersionDoc {
     [key: string]: string | undefined;
   };
   [key: string]: unknown;
-}
-
-function nowIso(): string {
-  return new Date().toISOString();
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message
-    ? error.message
-    : String(error);
 }
 
 function isLikelyVersionKey(key: unknown): key is string {
@@ -84,6 +81,9 @@ function pickLatestAndPreviousVersions(doc: Packument): {
 async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const { packageName } = job.data;
   const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
+  const outputDir = process.env.OUTPUT_DIR || DEFAULT_OUTPUT_DIR;
+
+  await ensureOutputDir(outputDir);
 
   process.stdout.write(`[${nowIso()}] Processing: ${packageName}\n`);
 
@@ -93,6 +93,17 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
   } catch (e) {
     throw new Error(
       `packument fetch failed for ${packageName}: ${getErrorMessage(e)}`,
+    );
+  }
+
+  try {
+    await writeMetadataToFile(packageName, packument, outputDir);
+    process.stdout.write(
+      `[${nowIso()}] ✓ Wrote metadata for ${packageName}\n`,
+    );
+  } catch (e) {
+    throw new Error(
+      `failed to write metadata for ${packageName}: ${getErrorMessage(e)}`,
     );
   }
 

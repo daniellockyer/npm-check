@@ -7,46 +7,20 @@
 
 import "dotenv/config";
 import { Worker } from "bullmq";
-import { promises as fs } from "fs";
-import { join } from "path";
 import { fetchPackument, type Packument } from "./lib/fetch-packument.ts";
+import {
+  DEFAULT_OUTPUT_DIR,
+  nowIso,
+  getErrorMessage,
+  ensureOutputDir,
+  writeMetadataToFile,
+} from "./lib/utils.ts";
 
 interface PackageJobData {
   packageName: string;
 }
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.com/";
-const DEFAULT_OUTPUT_DIR = "./metadata";
-
-function nowIso(): string {
-  return new Date().toISOString();
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message
-    ? error.message
-    : String(error);
-}
-
-async function ensureOutputDir(outputDir: string): Promise<void> {
-  try {
-    await fs.access(outputDir);
-  } catch {
-    await fs.mkdir(outputDir, { recursive: true });
-  }
-}
-
-async function writeMetadataToFile(
-  packageName: string,
-  metadata: Packument,
-  outputDir: string,
-): Promise<void> {
-  // Sanitize package name for filesystem (handle scoped packages)
-  const sanitizedName = packageName.replace(/[\/\\:*?"<>|]/g, "_");
-  const filePath = join(outputDir, `${sanitizedName}.json`);
-
-  await fs.writeFile(filePath, JSON.stringify(metadata, null, 2), "utf-8");
-}
 
 async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const { packageName } = job.data;
