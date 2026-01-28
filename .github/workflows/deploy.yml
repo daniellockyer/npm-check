@@ -39,6 +39,7 @@ jobs:
       PM2_APP_NAME: ${{ secrets.PM2_APP_NAME || 'npm-scan' }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      OUTPUT_DIR: ${{ secrets.OUTPUT_DIR }}
 
     steps:
       - name: Checkout
@@ -74,6 +75,6 @@ jobs:
         shell: bash
         run: |
           ssh -p "${SSH_PORT}" "${HETZNER_USER}@${HETZNER_HOST}" \
-            "HETZNER_DEPLOY_PATH='${HETZNER_DEPLOY_PATH}' PM2_APP_NAME='${PM2_APP_NAME}' TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}' TELEGRAM_CHAT_ID='${TELEGRAM_CHAT_ID}' bash -s" \
+            "HETZNER_DEPLOY_PATH='${HETZNER_DEPLOY_PATH}' PM2_APP_NAME='${PM2_APP_NAME}' TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}' TELEGRAM_CHAT_ID='${TELEGRAM_CHAT_ID}' OUTPUT_DIR='${OUTPUT_DIR}' bash -s" \
             < .github/scripts/deploy_remote.sh
 

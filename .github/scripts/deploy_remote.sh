@@ -58,6 +58,7 @@ ensure_pm2
 export PM2_APP_NAME="${PM2_APP_NAME}"
 export TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
 export TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
+export OUTPUT_DIR="${OUTPUT_DIR:-}"
 
 PM2_APP_NAME="${PM2_APP_NAME}" pm2 startOrReload ecosystem.config.cjs --env production
 pm2 save
