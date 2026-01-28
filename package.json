@@ -8,8 +8,12 @@
   "scripts": {
     "producer": "node src/producer.ts",
     "worker": "node src/worker.ts",
+    "bulk-producer": "node src/bulk-producer.ts",
+    "bulk-worker": "node src/bulk-worker.ts",
     "dev:producer": "node --watch src/producer.ts",
     "dev:worker": "node --watch src/worker.ts",
+    "dev:bulk-producer": "node --watch src/bulk-producer.ts",
+    "dev:bulk-worker": "node --watch src/bulk-worker.ts",
     "fetch-packument": "node src/fetch-packument.ts",
     "metrics": "node --watch src/metrics.ts",
     "typecheck": "tsc --noEmit"
@@ -18,6 +22,7 @@
     "node": ">=24"
   },
   "dependencies": {
+    "all-the-package-names": "^2.0.2340",
     "bullmq": "^5.66.5",
     "dotenv": "^17.2.3",
     "ioredis": "^5.9.2",

@@ -53,5 +53,22 @@ module.exports = {
         GITHUB_TOKEN: process.env.GITHUB_TOKEN || "",
       },
     },
+    {
+      name: process.env.PM2_APP_NAME_BULK_WORKER || "npm-scan-bulk-worker",
+      script: path.join(__dirname, "src", "bulk-worker.ts"),
+      interpreter: "node",
+      autorestart: true,
+      max_restarts: 50,
+      restart_delay: 2000,
+      instances: 1,
+      exec_mode: "fork",
+      env: {
+        NODE_ENV: "production",
+        REDIS_HOST: process.env.REDIS_HOST || "localhost",
+        REDIS_PORT: process.env.REDIS_PORT || "6379",
+        NPM_REGISTRY_URL: process.env.NPM_REGISTRY_URL || "",
+        OUTPUT_DIR: process.env.OUTPUT_DIR || "./metadata",
+      },
+    },
   ],
 };
