@@ -24,12 +24,14 @@ interface PackageJobData {
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.com/";
 
+// Environment variables
+const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
+const outputDir = process.env.OUTPUT_DIR || DEFAULT_OUTPUT_DIR;
+const redisHost = process.env.REDIS_HOST || "localhost";
+const redisPort = Number(process.env.REDIS_PORT || 6379);
+
 async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const { packageName } = job.data;
-  const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
-  const outputDir = process.env.OUTPUT_DIR || DEFAULT_OUTPUT_DIR;
-
-  await ensureOutputDir(outputDir);
 
   // Check if file already exists
   const filePath = getMetadataFilePath(packageName, outputDir);
@@ -65,8 +67,8 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
 }
 
 const connection = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT || 6379),
+  host: redisHost,
+  port: redisPort,
   maxRetriesPerRequest: null,
 };
 
@@ -100,6 +102,8 @@ worker.on("failed", (job, err) => {
 worker.on("error", (err) => {
   process.stderr.write(`[${nowIso()}] WORKER ERROR: ${getErrorMessage(err)}\n`);
 });
+
+await ensureOutputDir(outputDir);
 
 process.stdout.write(
   `[${nowIso()}] Bulk worker started: processing at 1 package/second\n`,

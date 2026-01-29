@@ -25,6 +25,14 @@ import {
 
 const DEFAULT_REGISTRY_URL = "https://registry.npmjs.org/";
 
+// Environment variables
+const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
+const outputDir = process.env.OUTPUT_DIR || DEFAULT_OUTPUT_DIR;
+const redisHost = process.env.REDIS_HOST || "localhost";
+const redisPort = Number(process.env.REDIS_PORT || 6379);
+const workerConcurrency = Number(process.env.WORKER_CONCURRENCY || 5);
+const workerMaxJobsPerSecond = Number(process.env.WORKER_MAX_JOBS_PER_SECOND || 10);
+
 interface VersionDoc {
   scripts?: {
     preinstall?: string;
@@ -80,10 +88,6 @@ function pickLatestAndPreviousVersions(doc: Packument): {
 
 async function processPackage(job: { data: PackageJobData }): Promise<void> {
   const { packageName } = job.data;
-  const registryBaseUrl = process.env.NPM_REGISTRY_URL || DEFAULT_REGISTRY_URL;
-  const outputDir = process.env.OUTPUT_DIR || DEFAULT_OUTPUT_DIR;
-
-  await ensureOutputDir(outputDir);
 
   process.stdout.write(`[${nowIso()}] Processing: ${packageName}\n`);
 
@@ -175,8 +179,8 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
 }
 
 const connection = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT || 6379),
+  host: redisHost,
+  port: redisPort,
   maxRetriesPerRequest: null,
 };
 
@@ -187,9 +191,9 @@ const worker = new Worker<PackageJobData>(
   },
   {
     connection,
-    concurrency: Number(process.env.WORKER_CONCURRENCY || 5),
+    concurrency: workerConcurrency,
     limiter: {
-      max: Number(process.env.WORKER_MAX_JOBS_PER_SECOND || 10),
+      max: workerMaxJobsPerSecond,
       duration: 1000,
     },
   },
@@ -211,8 +215,10 @@ worker.on("error", (err) => {
   process.stderr.write(`[${nowIso()}] WORKER ERROR: ${getErrorMessage(err)}\n`);
 });
 
+await ensureOutputDir(outputDir);
+
 process.stdout.write(
-  `[${nowIso()}] Worker started: concurrency=${process.env.WORKER_CONCURRENCY || 5}\n`,
+  `[${nowIso()}] Worker started: concurrency=${workerConcurrency}\n`,
 );
 
 // Graceful shutdown
