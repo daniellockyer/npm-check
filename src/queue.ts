@@ -21,10 +21,10 @@ export const packageQueue = new Queue<PackageJobData>("package-scan", {
       delay: 5000,
     },
     removeOnComplete: {
-      age: 604800, // Keep completed jobs for 1 week
+      age: 3600, // Keep completed jobs for 1 hour
     },
     removeOnFail: {
-      age: 604800, // Keep failed jobs for 1 week
+      age: 3600, // Keep failed jobs for 1 hour
     },
   },
 });

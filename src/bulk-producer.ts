@@ -52,10 +52,10 @@ const bulkQueue = new Queue<PackageJobData>("bulk-package-metadata", {
       delay: 2000,
     },
     removeOnComplete: {
-      age: 604800, // Keep completed jobs for 1 week
+      age: 3600, // Keep completed jobs for 1 hour
     },
     removeOnFail: {
-      age: 604800, // Keep failed jobs for 1 week
+      age: 3600, // Keep failed jobs for 1 hour
     },
   },
 });
