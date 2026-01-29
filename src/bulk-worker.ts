@@ -42,9 +42,7 @@ async function processPackage(job: { data: PackageJobData }): Promise<void> {
 
   try {
     await writeMetadataToFile(packageName, packument, outputDir);
-    process.stdout.write(
-      `[${nowIso()}] ✓ Wrote metadata for ${packageName}\n`,
-    );
+    process.stdout.write(`[${nowIso()}] ✓ Wrote metadata for ${packageName}\n`);
   } catch (e) {
     throw new Error(
       `failed to write metadata for ${packageName}: ${getErrorMessage(e)}`,
@@ -65,7 +63,7 @@ const worker = new Worker<PackageJobData>(
   },
   {
     connection,
-    concurrency: 5,
+    concurrency: 10,
     /*limiter: {
       max: 50, // 10 jobs per second
       duration: 1000,
