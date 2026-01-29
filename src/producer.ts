@@ -7,10 +7,18 @@
 
 import "dotenv/config";
 import { setTimeout as delay } from "node:timers/promises";
+import { promises as fs } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 import { packageQueue, type PackageJobData } from "./queue.ts";
 
 const DEFAULT_REPLICATE_DB_URL = "https://replicate.npmjs.com/";
 const DEFAULT_CHANGES_URL = "https://replicate.npmjs.com/_changes";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const CHECKPOINT_FILE = join(__dirname, "../.producer-checkpoint.json");
 
 interface ChangesResult {
   id: string;
@@ -81,6 +89,47 @@ async function getInitialSince(
   return dbInfo.update_seq;
 }
 
+async function loadCheckpoint(): Promise<string | number | null> {
+  try {
+    const data = await fs.readFile(CHECKPOINT_FILE, "utf-8");
+    const checkpoint = JSON.parse(data);
+    if (
+      checkpoint &&
+      (typeof checkpoint.since === "string" ||
+        typeof checkpoint.since === "number")
+    ) {
+      return checkpoint.since;
+    }
+  } catch (error) {
+    // File doesn't exist or is invalid - that's okay, we'll start fresh
+    if (
+      !(
+        error instanceof Error &&
+        (error.code === "ENOENT" || error.name === "SyntaxError")
+      )
+    ) {
+      process.stderr.write(
+        `[${nowIso()}] WARN failed to load checkpoint: ${getErrorMessage(error)}\n`,
+      );
+    }
+  }
+  return null;
+}
+
+async function saveCheckpoint(since: string | number): Promise<void> {
+  try {
+    await fs.writeFile(
+      CHECKPOINT_FILE,
+      JSON.stringify({ since, updated: nowIso() }, null, 2),
+      "utf-8",
+    );
+  } catch (error) {
+    process.stderr.write(
+      `[${nowIso()}] WARN failed to save checkpoint: ${getErrorMessage(error)}\n`,
+    );
+  }
+}
+
 async function run(): Promise<void> {
   const replicateDbUrl =
     process.env.NPM_REPLICATE_DB_URL || DEFAULT_REPLICATE_DB_URL;
@@ -95,9 +144,22 @@ async function run(): Promise<void> {
   let since: string | number | null = null;
   let backoffMs = 1000;
 
-  since = await getInitialSince(replicateDbUrl);
+  // Try to load checkpoint first
+  const checkpointSince = await loadCheckpoint();
+  if (checkpointSince !== null) {
+    since = checkpointSince;
+    process.stdout.write(
+      `[${nowIso()}] Producer resuming from checkpoint: since=${since}\n`,
+    );
+  } else {
+    since = await getInitialSince(replicateDbUrl);
+    process.stdout.write(
+      `[${nowIso()}] Producer starting fresh: since=${since}\n`,
+    );
+  }
+
   process.stdout.write(
-    `[${nowIso()}] Producer starting: changes=${changesUrl} since=${since} limit=${changesLimit}\n`,
+    `[${nowIso()}] Producer running: changes=${changesUrl} limit=${changesLimit}\n`,
   );
 
   // Run indefinitely.
@@ -144,6 +206,7 @@ async function run(): Promise<void> {
       }
 
       since = changes.last_seq;
+      await saveCheckpoint(since);
 
       if (changes.results.length === 0) {
         await delay(pollMs);
